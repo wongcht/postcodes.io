@@ -27,7 +27,7 @@ logs:
 ## Open psql shell to development pg instance
 .PHONY: psql
 psql:
-	psql -h 0.0.0.0 --username postcodesio postcodesiodb
+	PGPASSWORD=password psql -h 127.0.0.1 -p 5433 --username postcodesio postcodesiodb
 
 ## -- Test Methods --
 
