@@ -9,18 +9,10 @@ const error404Message = "Terminated postcode not found";
 describe("Terminated postcode route", () => {
   let testTerminatedPostcode: string, path: string;
 
-  before(async function () {
-    this.timeout(0);
-    await helper.clearTerminatedPostcodesDb();
-    await helper.seedTerminatedPostcodeDb();
-  });
-
   beforeEach(async () => {
     const result = await helper.randomTerminatedPostcode();
     testTerminatedPostcode = result.postcode;
   });
-
-  after(async () => helper.clearTerminatedPostcodesDb());
 
   describe("/GET /terminated_postcodes/:postcode", () => {
     it("should return 200 and only whitelisted attributes if terminated postcode found", (done) => {

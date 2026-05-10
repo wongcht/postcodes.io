@@ -117,16 +117,14 @@ function getCustomRelation() {
 const getRandom = (max: number) => Math.ceil(Math.random() * max);
 
 const QueryTerminatedPostcode = `
-	SELECT
-		postcode
-	FROM
-		terminated_postcodes LIMIT 1
-	OFFSET $1
+	SELECT postcode
+	FROM pcio.onspd
+	WHERE date_of_termination IS NOT NULL
+	LIMIT 1 OFFSET $1
 `;
 
 async function randomTerminatedPostcode() {
-  const randomId = getRandom(8); // 9 terminated postcodes in the
-  // testing database
+  const randomId = getRandom(8);
   const result = await query(QueryTerminatedPostcode, [randomId]);
   return result.rows.length === 0 ? null : result.rows[0];
 }
