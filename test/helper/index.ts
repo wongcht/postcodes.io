@@ -3,6 +3,10 @@ import { generateMethods, query } from "../../api/app/models/base";
 import { getConfig as configFactory } from "../../api/config/config";
 import * as Base from "../../api/app/models/base";
 import { Postcode } from "../../api/app/models/postcode";
+import {
+  random as randomPostcodeQuery,
+  find as findPostcodeQuery,
+} from "../../api/app/queries/postcodes";
 import removeDiacritics from "./remove_diacritics";
 
 import { unaccent } from "../../api/app/lib/unaccent";
@@ -95,7 +99,7 @@ const inferIndexInfo = (indexDef: any) => {
 // Location with nearby postcodes to be used in lonlat test requests
 const locationWithNearbyPostcodes = async function () {
   const postcodeWithNearbyPostcodes = "AB14 0LP";
-  return Postcode.find(postcodeWithNearbyPostcodes);
+  return findPostcodeQuery(postcodeWithNearbyPostcodes);
 };
 
 function getCustomRelation() {
@@ -130,23 +134,22 @@ async function randomTerminatedPostcode() {
 }
 
 const randomPostcode = async () => {
-  const { postcode } = await Postcode.random();
-  return postcode;
+  const result = await randomPostcodeQuery();
+  return result?.postcode;
 };
 
 const randomOutcode = async () => {
-  const { outcode } = await Postcode.random();
-  return outcode;
+  const result = await randomPostcodeQuery();
+  return result?.outcode;
 };
 
 const randomLocation = async () => {
-  const { longitude, latitude } = await Postcode.random();
-  return { longitude, latitude };
+  const result = await randomPostcodeQuery();
+  if (!result) return null;
+  return { longitude: result.longitude, latitude: result.latitude };
 };
 
-const lookupRandomPostcode = async () => {
-  return Postcode.random();
-};
+const lookupRandomPostcode = async () => randomPostcodeQuery();
 
 const seedPaths = {
   customRelation: join(__dirname, "../seed/customRelation.csv"),

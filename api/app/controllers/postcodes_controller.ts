@@ -1,6 +1,4 @@
 import { isEmpty, qToString } from "../lib/string";
-import { Postcode } from "../models/postcode";
-import { TerminatedPostcode } from "../models/terminated_postcode";
 import { isValid } from "postcode";
 import { chunk } from "../lib/chunk";
 import { getConfig } from "../../config/config";
@@ -15,27 +13,29 @@ import {
 } from "../lib/errors";
 import { Handler } from "../types/express";
 import {
-  PostcodeTuple,
-  PostcodeInterface,
-  NearestPostcodeTuple,
+  PostcodeRow,
   NearestPostcodesOptions,
-} from "../models/postcode";
+  find,
+  search,
+  random as randomPostcode,
+  nearestPostcodes,
+  toJson,
+} from "../queries/postcodes";
+import { find as findTerminated } from "../queries/terminated_postcodes";
 
 const { defaults } = getConfig();
 
 export const show: Handler = async (request, response, next) => {
   try {
     const { postcode } = request.params;
-
     if (!isValid(postcode.trim())) throw new InvalidPostcodeError();
 
-    const result = await Postcode.find(postcode);
+    const result = await find(postcode);
     if (!result) {
-      // Check if postcode has been terminated
-      const terminated = await TerminatedPostcode.find(postcode);
+      const terminated = await findTerminated(postcode);
       throw new PostcodeNotFoundError(terminated);
     }
-    response.jsonApiResponse = { status: 200, result: Postcode.toJson(result) };
+    response.jsonApiResponse = { status: 200, result: toJson(result) };
     next();
   } catch (error) {
     next(error);
@@ -45,7 +45,7 @@ export const show: Handler = async (request, response, next) => {
 export const valid: Handler = async (request, response, next) => {
   try {
     const { postcode } = request.params;
-    const result = await Postcode.find(postcode);
+    const result = await find(postcode);
     response.jsonApiResponse = { status: 200, result: !!result };
     next();
   } catch (error) {
@@ -56,10 +56,10 @@ export const valid: Handler = async (request, response, next) => {
 export const random: Handler = async (request, response, next) => {
   try {
     const { outcode } = request.query;
-    const result = await Postcode.random(qToString(outcode));
+    const result = await randomPostcode(qToString(outcode));
     response.jsonApiResponse = {
       status: 200,
-      result: result ? Postcode.toJson(result) : null,
+      result: result ? toJson(result) : null,
     };
     return next();
   } catch (error) {
@@ -84,7 +84,7 @@ const GEO_ASYNC_LIMIT =
 
 interface LookupGeolocationResult {
   query: { [index: string]: unknown };
-  result: null | (PostcodeInterface | NearestPostcodeTuple)[];
+  result: null | ReturnType<typeof toJson>[];
 }
 
 const bulkGeocode: Handler = async (request, response, next) => {
@@ -106,42 +106,29 @@ const bulkGeocode: Handler = async (request, response, next) => {
 
     const data: LookupGeolocationResult[] = new Array(geolocations.length);
 
-    const lookupGeolocation = async (
-      location: NearestPostcodesOptions,
-      i: number
-    ): Promise<void> => {
-      const postcodes = await Postcode.nearestPostcodes(location);
-      let result = null;
-      if (postcodes && postcodes.length > 0) {
-        result = postcodes.map((postcode) => Postcode.toJson(postcode));
-      }
-      data[i] = {
-        query: sanitizeQuery(location),
-        result,
-      };
-    };
-
-    const whitelist = [
-      "limit",
-      "longitude",
-      "latitude",
-      "radius",
-      "widesearch",
-    ];
-
+    const whitelist = ["limit", "longitude", "latitude", "radius", "widesearch"];
     const sanitizeQuery = (q: NearestPostcodesOptions) => {
       const result: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(q)) {
-        if (whitelist.indexOf(key.toLowerCase()) !== -1) {
-          result[key] = value;
-        }
+        if (whitelist.indexOf(key.toLowerCase()) !== -1) result[key] = value;
       }
       return result;
     };
 
+    const lookupGeolocation = async (
+      location: NearestPostcodesOptions,
+      i: number
+    ): Promise<void> => {
+      const postcodes = await nearestPostcodes(location);
+      data[i] = {
+        query: sanitizeQuery(location),
+        result: postcodes && postcodes.length > 0 ? postcodes.map(toJson) : null,
+      };
+    };
+
     const queue = chunk(
-      geolocations.map((geolocation, i) => {
-        return lookupGeolocation(
+      geolocations.map((geolocation, i) =>
+        lookupGeolocation(
           {
             ...(globalLimit && { limit: globalLimit }),
             ...(globalRadius && { radius: globalRadius }),
@@ -149,8 +136,8 @@ const bulkGeocode: Handler = async (request, response, next) => {
             ...geolocation,
           },
           i
-        );
-      }),
+        )
+      ),
       GEO_ASYNC_LIMIT
     );
 
@@ -169,7 +156,7 @@ const BULK_ASYNC_LIMIT =
 
 interface BulkLookupPostcodesResult {
   query: string;
-  result: null | PostcodeInterface | NearestPostcodeTuple;
+  result: null | ReturnType<typeof toJson>;
 }
 
 const bulkLookupPostcodes: Handler = async (request, response, next) => {
@@ -180,26 +167,15 @@ const bulkLookupPostcodes: Handler = async (request, response, next) => {
       return next(new ExceedMaxPostcodesError());
 
     const p = postcodes.filter((pc) => typeof pc === "string");
-
     const result: BulkLookupPostcodesResult[] = new Array(p.length);
 
-    const lookupPostcode = async (
-      postcode: string,
-      i: number
-    ): Promise<void> => {
-      const postcodeInfo = await Postcode.find(postcode);
-      if (!postcodeInfo) {
-        result[i] = { query: postcode, result: null };
-        return;
-      }
-      result[i] = {
-        query: postcode,
-        result: Postcode.toJson(postcodeInfo),
-      };
+    const lookupPostcode = async (postcode: string, i: number): Promise<void> => {
+      const info = await find(postcode);
+      result[i] = { query: postcode, result: info ? toJson(info) : null };
     };
 
     const queue: Promise<void>[][] = chunk(
-      p.map(lookupPostcode).filter((pc) => pc !== null),
+      p.map(lookupPostcode),
       BULK_ASYNC_LIMIT
     );
 
@@ -219,31 +195,28 @@ export const query: Handler = async (request, response, next) => {
   if (request.query.latitude && request.query.longitude) {
     request.params.latitude = qToString(request.query.latitude);
     request.params.longitude = qToString(request.query.longitude);
-    nearestPostcodes(request, response, next);
+    nearest_byLatLon(request, response, next);
     return;
   }
 
   if (request.query.lat && request.query.lon) {
     request.params.latitude = qToString(request.query.lat);
     request.params.longitude = qToString(request.query.lon);
-    nearestPostcodes(request, response, next);
+    nearest_byLatLon(request, response, next);
     return;
   }
 
   const postcode: string = qToString(request.query.q || request.query.query);
-
-  const { limit } = request.query;
-
   if (isEmpty(postcode)) return next(new PostcodeQueryRequiredError());
 
   try {
-    const results = await Postcode.search({
-      limit: qToString(limit),
+    const results = await search({
+      limit: qToString(request.query.limit),
       postcode,
     });
     response.jsonApiResponse = {
       status: 200,
-      result: results ? results.map((elem) => Postcode.toJson(elem)) : null,
+      result: results ? results.map(toJson) : null,
     };
     return next();
   } catch (error) {
@@ -253,15 +226,13 @@ export const query: Handler = async (request, response, next) => {
 
 export const autocomplete: Handler = async (request, response, next) => {
   try {
-    const results = await Postcode.search({
+    const results = await search({
       postcode: request.params.postcode,
       limit: qToString(request.query.limit),
     });
     response.jsonApiResponse = {
       status: 200,
-      result: results
-        ? results.map((elem: PostcodeTuple) => elem.postcode)
-        : null,
+      result: results ? results.map((p: PostcodeRow) => p.postcode) : null,
     };
     next();
   } catch (error) {
@@ -269,19 +240,20 @@ export const autocomplete: Handler = async (request, response, next) => {
   }
 };
 
-const nearestPostcodes: Handler = async (request, response, next) => {
+const nearest_byLatLon: Handler = async (request, response, next) => {
   try {
     const { longitude, latitude, limit, radius } = request.params;
-
-    const results = await Postcode.nearestPostcodes({
+    const results = await nearestPostcodes({
       longitude,
       latitude,
       limit,
       radius,
       wideSearch: !!request.query.wideSearch || !!request.query.widesearch,
     });
-    const result = results ? results.map((pc) => Postcode.toJson(pc)) : null;
-    response.jsonApiResponse = { status: 200, result };
+    response.jsonApiResponse = {
+      status: 200,
+      result: results ? results.map(toJson) : null,
+    };
     next();
   } catch (error) {
     next(error);
@@ -293,7 +265,7 @@ export const lonlat: Handler = async (request, response, next) => {
     const { limit, radius } = request.query;
     request.params.limit = qToString(limit);
     request.params.radius = qToString(radius);
-    return nearestPostcodes(request, response, next);
+    return nearest_byLatLon(request, response, next);
   } catch (error) {
     next(error);
   }
@@ -303,13 +275,13 @@ export const nearest: Handler = async (request, response, next) => {
   try {
     const { postcode } = request.params;
     const { limit, radius } = request.query;
-    const result = await Postcode.find(postcode);
+    const result = await find(postcode);
     if (!result) return next(new PostcodeNotFoundError());
     request.params.longitude = qToString(result.longitude);
     request.params.latitude = qToString(result.latitude);
     request.params.limit = qToString(limit);
     request.params.radius = qToString(radius);
-    return nearestPostcodes(request, response, next);
+    return nearest_byLatLon(request, response, next);
   } catch (error) {
     next(error);
   }

@@ -139,6 +139,9 @@ const postcodeAttributes = [
   "ruc21",
   "lep1",
   "lep2",
+  // v13 additions
+  "date_of_termination",
+  "index_of_multiple_deprivation",
 ];
 
 //baseObject is the main template of an object
