@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Drop and recreate the test database, then load test/seed/v13.sql.gz into it.
+#
+# Replaces the model-driven bin/create_test_db.
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SEED="$ROOT/test/seed/v13.sql.gz"
+
+CONTAINER="${PCIO_DB_CONTAINER:-dev-db-1}"
+USER="${PCIO_DB_USER:-postcodesio}"
+TEST_DB="${PCIO_TEST_DB:-postcodeio_testing}"
+
+if [[ ! -f "$SEED" ]]; then
+  echo "Seed not found at $SEED. Run bin/generate_test_seed first." >&2
+  exit 1
+fi
+
+DOCKER="docker exec -i $CONTAINER"
+
+$DOCKER psql -U "$USER" -d postgres -c "DROP DATABASE IF EXISTS $TEST_DB;" >/dev/null
+$DOCKER psql -U "$USER" -d postgres -c "CREATE DATABASE $TEST_DB OWNER $USER;" >/dev/null
+
+gunzip -c "$SEED" | $DOCKER psql -U "$USER" -d "$TEST_DB" -v ON_ERROR_STOP=1 --quiet
+
+echo "loaded $(du -h "$SEED" | cut -f1) into $TEST_DB"
