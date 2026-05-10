@@ -7,18 +7,10 @@ const app = helper.postcodesioApplication();
 describe("Outcodes routes", () => {
   let testOutcode: string, uri: string;
 
-  before(async function () {
-    this.timeout(0);
-    await helper.clearPostcodeDb();
-    await helper.seedPostcodeDb();
-  });
-
   beforeEach(() => {
     testOutcode = "AB10";
     uri = `/outcodes/${encodeURI(testOutcode)}/nearest`;
   });
-
-  after(async () => helper.clearPostcodeDb);
 
   describe("GET /outcodes/:outcode/nearest", () => {
     it("should return a list of nearby outcodes", (done: Done) => {

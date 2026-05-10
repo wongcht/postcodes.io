@@ -5,14 +5,6 @@ import { Done } from "mocha";
 const app = helper.postcodesioApplication();
 
 describe("Outcodes routes", () => {
-  before(async function () {
-    this.timeout(0);
-    await helper.clearPostcodeDb();
-    await helper.seedPostcodeDb();
-  });
-
-  after(async () => helper.clearPostcodeDb);
-
   describe("GET /outcodes/:outcode", function () {
     const testOutcode = "AB10";
     it("should return correct geolocation data for a given outcode", function (done: Done) {
