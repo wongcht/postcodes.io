@@ -1,7 +1,6 @@
 import { join } from "path";
 import { generateMethods, query } from "../../api/app/models/base";
 import { getConfig as configFactory } from "../../api/config/config";
-import * as AttributeBaseSuite from "./attribute_base.suite";
 import * as Base from "../../api/app/models/base";
 import { Postcode } from "../../api/app/models/postcode";
 import removeDiacritics from "./remove_diacritics";
@@ -181,8 +180,6 @@ export {
   getCustomRelation,
   lookupRandomPostcode,
   locationWithNearbyPostcodes,
-  // Test suites
-  AttributeBaseSuite,
   // Libs
   unaccent,
   errors,
