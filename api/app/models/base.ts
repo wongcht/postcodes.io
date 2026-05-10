@@ -1,13 +1,9 @@
 import { createReadStream } from "fs";
-import { Pool, PoolClient, QueryResult } from "pg";
+import { PoolClient, QueryResult } from "pg";
 import { from } from "pg-copy-streams";
 // @ts-ignore
 import csv = require("csv");
-import { getConfig } from "../../config/config";
-const defaults = getConfig();
-
-// Instantiate postgres client pool
-const pool = new Pool(defaults.postgres);
+import { pool } from "../queries/db";
 
 export type Schema = Record<string, string>;
 

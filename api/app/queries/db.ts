@@ -1,0 +1,14 @@
+import { Pool, QueryConfig, QueryResult } from "pg";
+import { getConfig } from "../../config/config";
+
+const { postgres } = getConfig();
+
+export const pool = new Pool(postgres);
+
+export const query = <T = any>(
+  text: string | QueryConfig,
+  values?: any[]
+): Promise<QueryResult<T>> => {
+  if (typeof text === "string") return pool.query<T>(text, values);
+  return pool.query<T>(text);
+};
