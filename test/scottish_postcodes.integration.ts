@@ -66,10 +66,7 @@ describe("Scottish postcode route", () => {
         .end(done);
     });
 
-    // Re-enable once postcodes_controller migrates - the not-found
-    // branch falls through to legacy Postcode.find which still queries
-    // the (now-removed) public.postcodes relation.
-    it.skip("should return 404 if postcode not found", (done) => {
+    it("should return 404 if postcode not found", (done) => {
       const postcode = "ID11QE";
       const path = `/scotland/postcodes/${encodeURI(postcode)}`;
       request(app)

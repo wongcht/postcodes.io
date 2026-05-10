@@ -1,4 +1,3 @@
-import { Postcode, TerminatedPostcode } from "../../api/app/models/index";
 import { assert } from "chai";
 
 // Retrieve object size
@@ -94,7 +93,6 @@ export const isRawOutcodeObject = (o: any) => {
   outcodeType.private.forEach(checkProps(o));
 };
 
-const rawPostcodeAttributes = Object.keys(Postcode.relation.schema);
 const postcodeAttributes = [
   "nhs_ha",
   "country",
@@ -170,74 +168,6 @@ export const isPostcodeObject = (
 export const isPostcodeWithDistanceObject = (o: any) =>
   isPostcodeObject(o, ["distance"]);
 
-//raw Object is the one that only has properties specified in the schema
-export const isRawPostcodeObject = (
-  o: any,
-  additionalAttr: string[],
-  blacklist: string[]
-) => {
-  isObject(o, rawPostcodeAttributes, additionalAttr, blacklist);
-};
-
-const postcodeForeignColumns = [
-  "parliamentary_constituency",
-  "admin_district",
-  "parish",
-  "admin_county",
-  "admin_ward",
-  "ced",
-  "pfa",
-  "ccg_code",
-  "ccg",
-  "nuts",
-  "nuts_code",
-  "lsoa",
-  "lsoa_id",
-  "msoa",
-  "msoa_id",
-  // New foreign columns (Nov 2025)
-  "nhs_region",
-  "nhs_region_id",
-  "ttwa",
-  "ttwa_id",
-  "national_park",
-  "national_park_id",
-  "bua",
-  "bua_id",
-  "icb",
-  "icb_id",
-  "cancer_alliance",
-  "cancer_alliance_id",
-  "lsoa21",
-  "lsoa21_id",
-  "msoa21",
-  "msoa21_id",
-  "ruc11",
-  "ruc11_id",
-  "ruc21",
-  "ruc21_id",
-  "lep1",
-  "lep1_id",
-  "lep2",
-  "lep2_id",
-];
-
-export const isRawPostcodeObjectWithFC = (
-  o: any,
-  additionalAttr?: string[],
-  blacklist?: string[]
-) => {
-  isRawPostcodeObject(
-    o,
-    postcodeForeignColumns.concat(additionalAttr || []),
-    blacklist || []
-  );
-};
-
-export const isRawPostcodeObjectWithFCandDistance = (o: any) =>
-  //@ts-ignore
-  isRawPostcodeObjectWithFC(o, ["distance"]);
-
 const terminatedPostcodeAttributes = [
   "postcode",
   "year_terminated",
@@ -246,16 +176,7 @@ const terminatedPostcodeAttributes = [
   "latitude",
 ];
 
-const rawTerminatedPostcodeAttributes = Object.keys(
-  TerminatedPostcode.relation.schema
-);
-
 export const isTerminatedPostcodeObject = (o: any) => {
   terminatedPostcodeAttributes.forEach((attr) => assert.property(o, attr));
   assert.equal(Object.keys(o).length, terminatedPostcodeAttributes.length);
-};
-
-export const isRawTerminatedPostcodeObject = (o: any) => {
-  rawTerminatedPostcodeAttributes.forEach((attr) => assert.property(o, attr));
-  assert.equal(Object.keys(o).length, rawTerminatedPostcodeAttributes.length);
 };

@@ -1,9 +1,7 @@
 /**
  * PG helper methods
  */
-import * as Base from "../../api/app/models/base";
-
-const query = Base.query;
+import { query } from "../../api/app/queries/db";
 
 // Credit: https://www.peterbe.com/plog/select-all-relations-in-postgresql
 const databaseRelationsQuery = `

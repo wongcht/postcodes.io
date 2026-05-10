@@ -1,5 +1,4 @@
 import { Handler } from "../types/express";
-import { Postcode } from "../models/postcode";
 import { isValid } from "postcode";
 import {
   InvalidPostcodeError,
@@ -7,6 +6,7 @@ import {
   PostcodeNotInSpdError,
 } from "../lib/errors";
 import { find as findScottish, toJson } from "../queries/scottish_postcodes";
+import { find as findPostcode } from "../queries/postcodes";
 
 export const show: Handler = async (request, response, next) => {
   try {
@@ -15,8 +15,7 @@ export const show: Handler = async (request, response, next) => {
 
     const result = await findScottish(postcode);
     if (!result) {
-      // TODO(v13): swap to api/app/queries/postcodes once that migration lands.
-      const pResult = await Postcode.find(postcode);
+      const pResult = await findPostcode(postcode);
       if (!pResult) throw new PostcodeNotFoundError();
       throw new PostcodeNotInSpdError();
     }
