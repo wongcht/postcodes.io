@@ -1,39 +1,20 @@
 import request from "supertest";
 import { assert } from "chai";
-import { join } from "path";
 import {
   config,
-  clearPostcodeDb,
   postcodesioApplication,
-  seedPostcodeDb,
   allowsCORS,
   isPlaceObject,
   validCorsOptions,
-  Place
 } from "./helper/index";
 
 const { defaults } = config;
 const app = postcodesioApplication();
-const seedPathDirectory = join(__dirname, "seed/places/");
 
 const DEFAULT_LIMIT = defaults.placesSearch.limit.DEFAULT;
 
 describe("Places Routes", () => {
-  before(async function () {
-    this.timeout(0);
-    await clearPostcodeDb(); 
-    await seedPostcodeDb();
-  });
-
-  after(async () => await clearPostcodeDb());
-
   describe("/places/:id", () => {
-    before(async function() {
-      // Explicitly set up the Places table to ensure it's properly seeded
-      await Place.destroyRelation();
-      await Place.setupTable(seedPathDirectory);
-    });
-    
     it("returns a place by id", (done) => {
       const code = "osgb4000000074558362";
       request(app)
