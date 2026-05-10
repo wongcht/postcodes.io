@@ -843,6 +843,21 @@
             "description": "The date the postcode was introduced in YYYYMM format.",
             "example": "198001"
           },
+          "date_of_termination": {
+            "title": "Date of Termination",
+            "type": "string",
+            "nullable": true,
+            "description": "The date the postcode was terminated in YYYYMM format. Null for live postcodes.",
+            "example": null
+          },
+          "index_of_multiple_deprivation": {
+            "title": "Index of Multiple Deprivation",
+            "type": "integer",
+            "format": "int32",
+            "nullable": true,
+            "description": "ONS Index of Multiple Deprivation (IMD) rank for this postcode's LSOA. Lower ranks correspond to more deprived areas. England, Wales, Scotland and Northern Ireland use independent IMD scales — values are not directly comparable across countries.",
+            "example": 14843
+          },
           "parliamentary_constituency_2024": {
             "title": "Westminster Parliamentary Constituency (2024)",
             "type": "string",
