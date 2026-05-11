@@ -2,7 +2,7 @@ FROM node:24-alpine AS base
 
 RUN apk update && \
   apk upgrade && \
-  apk add --no-cache openssl bash git
+  apk add --no-cache openssl bash git postgresql-client
 
 ENV DOCKERIZE_VERSION v0.6.1
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
