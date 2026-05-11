@@ -4,9 +4,11 @@ const { isEmpty } = helper.string;
 
 describe("isEmpty", () => {
   it("returns true if null", () => {
+    //@ts-expect-error
     assert.isTrue(isEmpty(null));
   });
   it("returns true if undefined", () => {
+    //@ts-expect-error
     assert.isTrue(isEmpty(undefined));
   });
   it("returns true if spaces", () => {

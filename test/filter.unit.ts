@@ -5,8 +5,12 @@ import * as path from "path";
 
 const bulkPostcodePath = path.resolve(__dirname, "./seed/bulk_postcode.json");
 const bulkGeocodingPath = path.resolve(__dirname, "./seed/bulk_geocoding.json");
-const bulkPostcodeResult = JSON.parse(fs.readFileSync(bulkPostcodePath, 'utf8'));
-const bulkGeocodingResult = JSON.parse(fs.readFileSync(bulkGeocodingPath, 'utf8'));
+const bulkPostcodeResult = JSON.parse(
+  fs.readFileSync(bulkPostcodePath, "utf8")
+);
+const bulkGeocodingResult = JSON.parse(
+  fs.readFileSync(bulkGeocodingPath, "utf8")
+);
 const cloneObject = (o: any) => JSON.parse(JSON.stringify(o));
 
 describe("Filter middleware", () => {

@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 const testDataPath = path.resolve(__dirname, "./seed/accent_tests.json");
-const testData = JSON.parse(fs.readFileSync(testDataPath, 'utf8'));
+const testData = JSON.parse(fs.readFileSync(testDataPath, "utf8"));
 
 describe("unaccent", () => {
   it("removes diacritics the same way as postgres", () => {

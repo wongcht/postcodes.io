@@ -31,7 +31,6 @@ describe("Errors", () => {
   });
 });
 
-
 describe("Utils", () => {
   describe("Health", () => {
     it("should return 200 if DB available", async () => {
