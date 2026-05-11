@@ -7,18 +7,11 @@ const app = helper.postcodesioApplication();
 describe("Filter method", function () {
   let testPostcode: string;
 
-  before(async function () {
-    this.timeout(0);
-    await helper.clearPostcodeDb();
-    await helper.seedPostcodeDb();
-  });
-
   beforeEach(async () => {
     const result = await helper.lookupRandomPostcode();
+    if (result === null) throw new Error("Result is null");
     testPostcode = result.postcode;
   });
-
-  after(async () => helper.clearPostcodeDb());
 
   describe("Bulk postcode lookup", () => {
     it("filters by filter attributes", (done: Done) => {

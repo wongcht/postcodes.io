@@ -20,19 +20,12 @@ describe("Utils with JSONP", () => {
 describe("Postcodes routes with JSONP", () => {
   let testPostcode: any, testOutcode: any;
 
-  before(async function () {
-    this.timeout(0);
-    await helper.clearPostcodeDb();
-    await helper.seedPostcodeDb();
-  });
-
   beforeEach(async () => {
     const result = await helper.lookupRandomPostcode();
+    if (result === null) throw new Error("Result is null");
     testPostcode = result.postcode;
     testOutcode = result.outcode;
   });
-
-  after(async () => helper.clearPostcodeDb());
 
   describe("GET /postcodes", () => {
     let uri: any;

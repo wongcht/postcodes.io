@@ -54,8 +54,6 @@ const randomLocation = async () => {
 
 const lookupRandomPostcode = async () => randomPostcodeQuery();
 
-// Methods
-export * from "./setup";
 // HTTP Helpers
 export * from "./http";
 // Type checking methods

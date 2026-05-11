@@ -16,14 +16,6 @@ const app = helper.postcodesioApplication();
  * - New fields (lsoa21, msoa21, lsoa11, msoa11, etc.) are populated correctly
  */
 describe("Postcodes E2E", function () {
-  before(async function () {
-    this.timeout(0);
-    await helper.clearPostcodeDb();
-    await helper.seedPostcodeDb();
-  });
-
-  after(async () => helper.clearPostcodeDb());
-
   describe("GET /postcodes/:postcode", function () {
     it("returns exact expected response for AB10 1AB", function (done) {
       const expectedResponse: Record<string, unknown> = {

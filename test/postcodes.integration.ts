@@ -6,21 +6,10 @@ const app = helper.postcodesioApplication();
 describe("Postcodes routes", function () {
   let testPostcode: string;
 
-  before(async function () {
-    this.timeout(0);
-    await helper.clearPostcodeDb();
-    await helper.seedPostcodeDb();
-    await helper.clearTerminatedPostcodesDb();
-    await helper.seedTerminatedPostcodeDb();
-  });
-
   beforeEach(async () => {
     const result = await helper.lookupRandomPostcode();
+    if (result == null) throw new Error("Result is null");
     testPostcode = result.postcode;
-  });
-
-  after(async () => {
-    await helper.clearPostcodeDb();
   });
 
   describe("GET /postcodes", function () {

@@ -4,17 +4,9 @@ import * as helper from "./helper";
 const app = helper.postcodesioApplication();
 
 describe("Postcodes routes", () => {
-  before(async function () {
-    this.timeout(0);
-    await helper.clearPostcodeDb();
-    await helper.seedPostcodeDb();
-  });
-
   beforeEach(async () => {
     await helper.lookupRandomPostcode();
   });
-
-  after(async () => helper.clearPostcodeDb);
 
   describe("GET /postcodes/lon/:longitude/lat/latitude", () => {
     let loc: any;
