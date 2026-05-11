@@ -21,4 +21,4 @@ CLAUDE.md
 missing.json
 .claude
 plan
-*.sql.gz
+/*.sql.gz
