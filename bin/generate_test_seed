@@ -2,8 +2,8 @@
 #
 # Generate test/seed/v13.sql.gz from a loaded postcodesiodb.
 #
-# Assumes the dev compose db container is running and named dev-db-1, and
-# that the full pg_dump has been loaded into postcodesiodb under schema pcio.
+# Reads from a fully-populated DB under schema pcio (typically the dev compose
+# stack: POSTGRES_HOST=127.0.0.1 POSTGRES_PORT=5433 POSTGRES_DATABASE=postcodesiodb).
 #
 # Output is a self-contained SQL stream:
 #   CREATE EXTENSION postgis;
@@ -18,31 +18,24 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/test/seed/v13.sql.gz"
 
-CONTAINER="${PCIO_DB_CONTAINER:-dev-db-1}"
-DB="${PCIO_DB_NAME:-postcodesiodb}"
-USER="${PCIO_DB_USER:-postcodesio}"
+HOST="${POSTGRES_HOST:-127.0.0.1}"
+PORT="${POSTGRES_PORT:-5433}"
+USER="${POSTGRES_USER:-postcodesio}"
+PASSWORD="${POSTGRES_PASSWORD:-password}"
+DB="${POSTGRES_DATABASE:-postcodesiodb}"
 
-DOCKER="docker exec -i $CONTAINER"
+export PGPASSWORD="$PASSWORD"
+PG_DUMP=(pg_dump -h "$HOST" -p "$PORT" -U "$USER" -d "$DB" --no-owner --no-privileges)
+PSQL=(psql -h "$HOST" -p "$PORT" -U "$USER" -d "$DB" -At)
 
 ONSPD_FILTER="postcode LIKE 'AB1%' OR postcode IN ('SE1P 5ZZ','SE1 9ZZ','JE2 4WD','M11 1AA','M1 1AD','SE1 2DL')"
 OPENNAMES_FILTER="outcode IN ('KW16','KW17')"
 SPD_FILTER="postcode LIKE 'AB1%'"
 
-emit_pre_data() {
-  $DOCKER pg_dump -U "$USER" -d "$DB" --schema-only --section=pre-data \
-    -n pcio --no-owner --no-privileges
-}
-
-emit_post_data() {
-  $DOCKER pg_dump -U "$USER" -d "$DB" --schema-only --section=post-data \
-    -n pcio --no-owner --no-privileges
-}
-
 emit_copy() {
   local table="$1" filter="$2"
   echo "COPY pcio.$table FROM STDIN;"
-  $DOCKER psql -U "$USER" -d "$DB" -At \
-    -c "\copy (SELECT * FROM pcio.$table WHERE $filter) TO STDOUT"
+  "${PSQL[@]}" -c "\copy (SELECT * FROM pcio.$table WHERE $filter) TO STDOUT"
   echo "\\."
   echo
 }
@@ -56,12 +49,12 @@ emit_copy() {
   echo
   echo "CREATE EXTENSION IF NOT EXISTS postgis;"
   echo
-  emit_pre_data
+  "${PG_DUMP[@]}" --schema-only --section=pre-data -n pcio
   echo
   emit_copy onspd "$ONSPD_FILTER"
   emit_copy opennames "$OPENNAMES_FILTER"
   emit_copy spd "$SPD_FILTER"
-  emit_post_data
+  "${PG_DUMP[@]}" --schema-only --section=post-data -n pcio
 } | gzip -9 > "$OUT"
 
 uncompressed_kb="$(gunzip -c "$OUT" | wc -c | awk '{printf "%.0f", $1/1024}')"
