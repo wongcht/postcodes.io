@@ -34,10 +34,7 @@ describe("Postcodes routes", () => {
       beforeEach((done) => {
         async.times(
           bulkLength,
-          async (_, next) => {
-            const locations = await helper.randomLocation();
-            next(null, locations);
-          },
+          async () => helper.randomLocation(),
           (error, locations) => {
             if (error) return done(error);
             testLocations = locations;
@@ -340,10 +337,7 @@ describe("Postcodes routes", () => {
       beforeEach((done) => {
         async.times(
           bulkLength,
-          async (_, next) => {
-            const postcode = await helper.randomPostcode();
-            next(null, postcode);
-          },
+          async () => helper.randomPostcode(),
           (error, postcodes) => {
             if (error) return done(error);
             testPostcodes = postcodes;

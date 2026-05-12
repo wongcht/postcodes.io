@@ -6,8 +6,6 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_HOST: pg
       POSTGRES_USER: postcodesio
-    ports:
-      - 5432:5432
   api:
     build:
       context: ../../

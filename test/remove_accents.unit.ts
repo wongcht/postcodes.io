@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { unaccent } from "../api/app/lib/unaccent";
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 const testDataPath = path.resolve(__dirname, "./seed/accent_tests.json");
 const testData = JSON.parse(fs.readFileSync(testDataPath, "utf8"));

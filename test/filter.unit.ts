@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { filter } from "../api/config/filter";
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 const bulkPostcodePath = path.resolve(__dirname, "./seed/bulk_postcode.json");
 const bulkGeocodingPath = path.resolve(__dirname, "./seed/bulk_geocoding.json");
