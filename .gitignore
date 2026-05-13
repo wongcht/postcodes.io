@@ -23,3 +23,6 @@ missing.json
 plan
 bench
 /*.sql.gz
+*.duckdb
+*.duckdb.gz
+.pnpm-store/
