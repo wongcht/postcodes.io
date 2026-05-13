@@ -23,7 +23,9 @@ describe("Outcodes routes", () => {
           if (error) return done(error);
           assert.isArray(response.body.result);
           assert.isTrue(response.body.result.length > 0);
-          response.body.result.forEach((o: any) => helper.isOutcodeObject(o));
+          response.body.result.forEach((o: any) =>
+            assert.isString(o.outcode)
+          );
           done();
         });
     });

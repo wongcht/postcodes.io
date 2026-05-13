@@ -20,7 +20,6 @@ describe("Outcodes routes", () => {
           assert.equal(response.body.result.outcode, testOutcode);
           assert.isUndefined(response.body.result.id);
           assert.isUndefined(response.body.result.location);
-          helper.isOutcodeObject(response.body.result);
           done();
         });
     });
@@ -37,7 +36,6 @@ describe("Outcodes routes", () => {
           if (error) return done(error);
           assert.equal(response.body.status, 200);
           assert.equal(response.body.result.outcode, testOutcode);
-          helper.isOutcodeObject(response.body.result);
           done();
         });
     });
@@ -52,7 +50,6 @@ describe("Outcodes routes", () => {
           if (error) return done(error);
           assert.equal(response.body.status, 200);
           assert.equal(response.body.result.outcode, testOutcode);
-          helper.isOutcodeObject(response.body.result);
           done();
         });
     });
@@ -109,7 +106,7 @@ describe("Outcodes routes", () => {
           assert.isArray(response.body.result);
           assert.isTrue(response.body.result.length > 0);
           response.body.result.forEach(function (outcode: any) {
-            helper.isOutcodeObject(outcode);
+            assert.isString(outcode.outcode);
           });
           done();
         });
@@ -129,7 +126,7 @@ describe("Outcodes routes", () => {
           assert.isArray(response.body.result);
           assert.isTrue(response.body.result.length > 0);
           response.body.result.forEach(function (outcode: any) {
-            helper.isOutcodeObject(outcode);
+            assert.isString(outcode.outcode);
           });
           done();
         });

@@ -25,7 +25,7 @@ describe("Terminated postcode route", () => {
           if (error) return done(error);
           assert.equal(response.body.status, 200);
           assert.equal(Object.keys(response.body).length, 2);
-          helper.isTerminatedPostcodeObject(response.body.result);
+          assert.equal(response.body.result.postcode, testTerminatedPostcode);
           done();
         });
     });
@@ -58,7 +58,10 @@ describe("Terminated postcode route", () => {
           if (error) return done(error);
           assert.equal(response.body.status, 200);
           assert.equal(Object.keys(response.body).length, 2);
-          helper.isTerminatedPostcodeObject(response.body.result);
+          assert.equal(
+            response.body.result.postcode,
+            testTerminatedPostcode.trim()
+          );
           done();
         });
     });

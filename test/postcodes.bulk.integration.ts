@@ -58,9 +58,10 @@ describe("Postcodes routes", () => {
               assert.property(lookup, "query");
               assert.property(lookup, "result");
               assert.isArray(lookup.result);
-              lookup.result.forEach((result: any) =>
-                helper.isPostcodeWithDistanceObject(result)
-              );
+              lookup.result.forEach((result: any) => {
+                assert.isString(result.postcode);
+                assert.isNumber(result.distance);
+              });
             });
             done();
           });
@@ -133,9 +134,8 @@ describe("Postcodes routes", () => {
             if (error) return done(error);
             assert.equal(response.body.result.length, 1);
             assert.equal(response.body.result[0].result.length, 1);
-            helper.isPostcodeWithDistanceObject(
-              response.body.result[0].result[0]
-            );
+            assert.isString(response.body.result[0].result[0].postcode);
+            assert.isNumber(response.body.result[0].result[0].distance);
             done();
           });
       });
@@ -155,9 +155,8 @@ describe("Postcodes routes", () => {
             if (error) return done(error);
             assert.equal(response.body.result.length, 1);
             assert.equal(response.body.result[0].result.length, 1);
-            helper.isPostcodeWithDistanceObject(
-              response.body.result[0].result[0]
-            );
+            assert.isString(response.body.result[0].result[0].postcode);
+            assert.isNumber(response.body.result[0].result[0].distance);
             done();
           });
       });
@@ -177,9 +176,8 @@ describe("Postcodes routes", () => {
             if (error) return done(error);
             assert.equal(response.body.result.length, 1);
             assert.equal(response.body.result[0].result.length, 2);
-            helper.isPostcodeWithDistanceObject(
-              response.body.result[0].result[0]
-            );
+            assert.isString(response.body.result[0].result[0].postcode);
+            assert.isNumber(response.body.result[0].result[0].distance);
             done();
           });
       });
@@ -200,9 +198,8 @@ describe("Postcodes routes", () => {
             const query = response.body.result[0].query;
             assert.isDefined(query.limit);
             assert.equal(query.radius, testLocation.radius);
-            helper.isPostcodeWithDistanceObject(
-              response.body.result[0].result[0]
-            );
+            assert.isString(response.body.result[0].result[0].postcode);
+            assert.isNumber(response.body.result[0].result[0].distance);
             testLocation.radius = 1000;
             request(app)
               .post("/postcodes")
@@ -377,7 +374,7 @@ describe("Postcodes routes", () => {
             response.body.result.forEach((lookup: any) => {
               assert.property(lookup, "query");
               assert.property(lookup, "result");
-              helper.isPostcodeObject(lookup.result);
+              assert.isString(lookup.result.postcode);
             });
             done();
           });

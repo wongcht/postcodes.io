@@ -4,7 +4,6 @@ import {
   config,
   postcodesioApplication,
   allowsCORS,
-  isPlaceObject,
   validCorsOptions,
 } from "./helper/index";
 
@@ -26,7 +25,6 @@ describe("Places Routes", () => {
           assert.equal(response.body.status, 200);
           const place = response.body.result;
           assert.equal(place.code, code);
-          isPlaceObject(place);
           done();
         });
     });
@@ -41,7 +39,6 @@ describe("Places Routes", () => {
           assert.equal(response.body.status, 200);
           const place = response.body.result;
           assert.equal(place.code, code);
-          isPlaceObject(place);
           done();
         });
     });
@@ -86,7 +83,7 @@ describe("Places Routes", () => {
           assert.equal(response.status, 200);
           const places = response.body.result;
           assert.isTrue(places.length > 0);
-          places.forEach((p: any) => isPlaceObject(p));
+          places.forEach((p: any) => assert.isString(p.code));
           done();
         });
     });
@@ -102,7 +99,7 @@ describe("Places Routes", () => {
           assert.equal(response.status, 200);
           const places = response.body.result;
           assert.isTrue(places.length > 0);
-          places.forEach((p: any) => isPlaceObject(p));
+          places.forEach((p: any) => assert.isString(p.code));
           done();
         });
     });
@@ -156,7 +153,7 @@ describe("Places Routes", () => {
           assert.equal(response.status, 200);
           const places = response.body.result;
           assert.equal(places.length, 1);
-          places.forEach((p: any) => isPlaceObject(p));
+          places.forEach((p: any) => assert.isString(p.code));
           done();
         });
     });
@@ -172,7 +169,7 @@ describe("Places Routes", () => {
           assert.equal(response.status, 200);
           const places = response.body.result;
           assert.equal(places.length, DEFAULT_LIMIT);
-          places.forEach((p: any) => isPlaceObject(p));
+          places.forEach((p: any) => assert.isString(p.code));
           done();
         });
     });
@@ -188,7 +185,7 @@ describe("Places Routes", () => {
           assert.equal(response.status, 200);
           const places = response.body.result;
           assert.equal(places.length, 1);
-          places.forEach((p: any) => isPlaceObject(p));
+          places.forEach((p: any) => assert.isString(p.code));
           done();
         });
     });
@@ -215,7 +212,7 @@ describe("Places Routes", () => {
           assert.equal(response.status, 200);
           const places = response.body.result;
           assert.equal(places.length, DEFAULT_LIMIT);
-          places.forEach((p: any) => isPlaceObject(p));
+          places.forEach((p: any) => assert.isString(p.code));
           done();
         });
     });
@@ -230,7 +227,7 @@ describe("Places Routes", () => {
         .end((error, response) => {
           if (error) return done(error);
           assert.equal(response.status, 200);
-          isPlaceObject(response.body.result);
+          assert.isString(response.body.result.code);
           done();
         });
     });

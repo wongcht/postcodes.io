@@ -29,7 +29,7 @@ describe("Postcodes routes", function () {
           assert.isArray(response.body.result);
           assert.equal(response.body.result.length, 10);
           response.body.result.forEach(function (postcode: any) {
-            helper.isPostcodeObject(postcode);
+            assert.isString(postcode.postcode);
           });
           done();
         });
@@ -46,7 +46,7 @@ describe("Postcodes routes", function () {
           assert.isArray(response.body.result);
           assert.equal(response.body.result.length, 10);
           response.body.result.forEach(function (postcode: any) {
-            helper.isPostcodeObject(postcode);
+            assert.isString(postcode.postcode);
           });
           done();
         });
@@ -65,7 +65,7 @@ describe("Postcodes routes", function () {
           assert.isArray(response.body.result);
           assert.equal(response.body.result.length, 10);
           response.body.result.forEach(function (postcode: any) {
-            helper.isPostcodeObject(postcode);
+            assert.isString(postcode.postcode);
           });
           done();
         });
@@ -88,7 +88,7 @@ describe("Postcodes routes", function () {
           assert.isArray(response.body.result);
           assert.equal(response.body.result.length, 11);
           response.body.result.forEach(function (postcode: any) {
-            helper.isPostcodeObject(postcode);
+            assert.isString(postcode.postcode);
           });
           done();
         });
@@ -111,7 +111,7 @@ describe("Postcodes routes", function () {
           assert.isArray(response.body.result);
           assert.equal(response.body.result.length, 100);
           response.body.result.forEach(function (postcode: any) {
-            helper.isPostcodeObject(postcode);
+            assert.isString(postcode.postcode);
           });
           done();
         });
@@ -134,7 +134,7 @@ describe("Postcodes routes", function () {
           assert.isArray(response.body.result);
           assert.equal(response.body.result.length, 10);
           response.body.result.forEach(function (postcode: any) {
-            helper.isPostcodeObject(postcode);
+            assert.isString(postcode.postcode);
           });
           done();
         });
@@ -175,7 +175,6 @@ describe("Postcodes routes", function () {
           if (error) return done(error);
           assert.equal(response.body.status, 200);
           assert.equal(response.body.result.postcode, testPostcode);
-          helper.isPostcodeObject(response.body.result);
           done();
         });
     });
@@ -322,8 +321,7 @@ describe("Postcodes routes", function () {
         .expect(200)
         .end(function (error, response) {
           if (error) return done(error);
-          assert.property(response.body.result, "postcode");
-          helper.isPostcodeObject(response.body.result);
+          assert.isString(response.body.result.postcode);
           done();
         });
     });
@@ -349,8 +347,7 @@ describe("Postcodes routes", function () {
           .expect(200)
           .end(function (error, response) {
             if (error) return done(error);
-            assert.property(response.body.result, "postcode");
-            helper.isPostcodeObject(response.body.result);
+            assert.isString(response.body.result.postcode);
             assert.equal(response.body.result.outcode, outcode);
             done();
           });

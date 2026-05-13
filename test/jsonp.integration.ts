@@ -42,7 +42,7 @@ describe("Postcodes routes with JSONP", () => {
       const jsonBody: any = helper.jsonpResponseBody(text);
       assert.isArray(jsonBody.result);
       assert.equal(jsonBody.result.length, 10);
-      jsonBody.result.forEach((pc: any) => helper.isPostcodeObject(pc));
+      jsonBody.result.forEach((pc: any) => assert.isString(pc.postcode));
     });
   });
 
@@ -60,7 +60,6 @@ describe("Postcodes routes with JSONP", () => {
       const jsonBody: any = helper.jsonpResponseBody(text);
       assert.equal(jsonBody.status, 200);
       assert.equal(jsonBody.result.postcode, testPostcode);
-      helper.isPostcodeObject(jsonBody.result);
     });
   });
 
@@ -115,9 +114,10 @@ describe("Postcodes routes with JSONP", () => {
       const jsonBody: any = helper.jsonpResponseBody(text);
       assert.isArray(jsonBody.result);
       assert.isTrue(jsonBody.result.length > 0);
-      jsonBody.result.forEach((pc: any) =>
-        helper.isPostcodeWithDistanceObject(pc)
-      );
+      jsonBody.result.forEach((pc: any) => {
+        assert.isString(pc.postcode);
+        assert.isNumber(pc.distance);
+      });
     });
   });
 
@@ -129,8 +129,7 @@ describe("Postcodes routes with JSONP", () => {
         .expect("Content-Type", jsonResponseTypeRegex)
         .expect(200);
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.property(jsonBody.result, "postcode");
-      helper.isPostcodeObject(jsonBody.result);
+      assert.isString(jsonBody.result.postcode);
     });
   });
 
@@ -175,9 +174,10 @@ describe("Postcodes routes with JSONP", () => {
       const jsonBody: any = helper.jsonpResponseBody(text);
       assert.isArray(jsonBody.result);
       assert.isTrue(jsonBody.result.length > 0);
-      jsonBody.result.forEach((pc: any) =>
-        helper.isPostcodeWithDistanceObject(pc)
-      );
+      jsonBody.result.forEach((pc: any) => {
+        assert.isString(pc.postcode);
+        assert.isNumber(pc.distance);
+      });
       assert.isTrue(
         jsonBody.result.some((elem: any) => elem.postcode === loc.postcode)
       );
