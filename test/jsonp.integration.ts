@@ -1,4 +1,4 @@
-import { assert } from "chai";
+import { describe, expect, it, beforeEach } from "vitest";
 import request from "supertest";
 import * as helper from "./helper";
 const jsonResponseTypeRegex = /text\/javascript/;
@@ -12,7 +12,7 @@ describe("Utils with JSONP", () => {
         .expect("Content-Type", jsonResponseTypeRegex)
         .expect(200);
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.equal(jsonBody.result, "pong");
+      expect(jsonBody.result).toBe("pong");
     });
   });
 });
@@ -40,9 +40,9 @@ describe("Postcodes routes with JSONP", () => {
         .expect("Content-Type", jsonResponseTypeRegex)
         .expect(200);
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.isArray(jsonBody.result);
-      assert.equal(jsonBody.result.length, 10);
-      jsonBody.result.forEach((pc: any) => assert.isString(pc.postcode));
+      expect(Array.isArray(jsonBody.result)).toBe(true);
+      expect(jsonBody.result.length).toBe(10);
+      jsonBody.result.forEach((pc: any) => expect(typeof pc.postcode).toBe("string"));
     });
   });
 
@@ -58,8 +58,8 @@ describe("Postcodes routes with JSONP", () => {
         .expect("Content-Type", jsonResponseTypeRegex)
         .expect(200);
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.equal(jsonBody.status, 200);
-      assert.equal(jsonBody.result.postcode, testPostcode);
+      expect(jsonBody.status).toBe(200);
+      expect(jsonBody.result.postcode).toBe(testPostcode);
     });
   });
 
@@ -73,12 +73,12 @@ describe("Postcodes routes with JSONP", () => {
         .expect("Content-Type", jsonResponseTypeRegex)
         .expect(200);
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.equal(jsonBody.status, 200);
-      assert.equal(jsonBody.result.outcode, testOutcode);
-      assert.property(jsonBody.result, "longitude");
-      assert.property(jsonBody.result, "latitude");
-      assert.property(jsonBody.result, "northings");
-      assert.property(jsonBody.result, "eastings");
+      expect(jsonBody.status).toBe(200);
+      expect(jsonBody.result.outcode).toBe(testOutcode);
+      expect(jsonBody.result).toHaveProperty("longitude");
+      expect(jsonBody.result).toHaveProperty("latitude");
+      expect(jsonBody.result).toHaveProperty("northings");
+      expect(jsonBody.result).toHaveProperty("eastings");
     });
   });
 
@@ -95,8 +95,8 @@ describe("Postcodes routes with JSONP", () => {
         .expect("Content-Type", jsonResponseTypeRegex)
         .expect(200);
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.equal(jsonBody.status, 200);
-      assert.isTrue(jsonBody.result);
+      expect(jsonBody.status).toBe(200);
+      expect(jsonBody.result).toBe(true);
     });
   });
 
@@ -106,17 +106,15 @@ describe("Postcodes routes with JSONP", () => {
 
       const result = await request(app)
         .get(uri)
-        .query({
-          callback: "foo",
-        })
+        .query({ callback: "foo" })
         .expect(200);
       const { text } = result;
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.isArray(jsonBody.result);
-      assert.isTrue(jsonBody.result.length > 0);
+      expect(Array.isArray(jsonBody.result)).toBe(true);
+      expect(jsonBody.result.length > 0).toBe(true);
       jsonBody.result.forEach((pc: any) => {
-        assert.isString(pc.postcode);
-        assert.isNumber(pc.distance);
+        expect(typeof pc.postcode).toBe("string");
+        expect(typeof pc.distance).toBe("number");
       });
     });
   });
@@ -129,7 +127,7 @@ describe("Postcodes routes with JSONP", () => {
         .expect("Content-Type", jsonResponseTypeRegex)
         .expect(200);
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.isString(jsonBody.result.postcode);
+      expect(typeof jsonBody.result.postcode).toBe("string");
     });
   });
 
@@ -146,9 +144,9 @@ describe("Postcodes routes with JSONP", () => {
         .expect("Content-Type", jsonResponseTypeRegex)
         .expect(200);
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.isArray(jsonBody.result);
-      assert.equal(jsonBody.result.length, 10);
-      jsonBody.result.forEach((pc: any) => assert.isString(pc));
+      expect(Array.isArray(jsonBody.result)).toBe(true);
+      expect(jsonBody.result.length).toBe(10);
+      jsonBody.result.forEach((pc: any) => expect(typeof pc).toBe("string"));
     });
   });
 
@@ -172,15 +170,15 @@ describe("Postcodes routes with JSONP", () => {
         .expect("Content-Type", jsonResponseTypeRegex)
         .expect(200);
       const jsonBody: any = helper.jsonpResponseBody(text);
-      assert.isArray(jsonBody.result);
-      assert.isTrue(jsonBody.result.length > 0);
+      expect(Array.isArray(jsonBody.result)).toBe(true);
+      expect(jsonBody.result.length > 0).toBe(true);
       jsonBody.result.forEach((pc: any) => {
-        assert.isString(pc.postcode);
-        assert.isNumber(pc.distance);
+        expect(typeof pc.postcode).toBe("string");
+        expect(typeof pc.distance).toBe("number");
       });
-      assert.isTrue(
+      expect(
         jsonBody.result.some((elem: any) => elem.postcode === loc.postcode)
-      );
+      ).toBe(true);
     });
   });
 });

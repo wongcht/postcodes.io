@@ -1,5 +1,5 @@
 import request from "supertest";
-import { assert } from "chai";
+import { describe, expect, it } from "vitest";
 import { postcodesioApplication } from "./helper";
 import { isValid } from "postcode";
 const app = postcodesioApplication();
@@ -10,75 +10,58 @@ describe("Scottish postcode route", () => {
   const testPostcode = "AB10 1AB";
 
   describe("/GET /scotland/postcodes/:postcode", () => {
-    it("should return 200 if postcode found", (done) => {
+    it("should return 200 if postcode found", async () => {
       const path = `/scotland/postcodes/${encodeURI(testPostcode)}`;
-      request(app)
+      const response = await request(app)
         .get(path)
         .expect("Content-Type", /json/)
-        .expect(200)
-        .end((error, response) => {
-          if (error) return done(error);
-          assert.equal(response.body.status, 200);
-          done();
-        });
+        .expect(200);
+      expect(response.body.status).toBe(200);
     });
 
-    it("returns canonical SPD attributes", (done) => {
+    it("returns canonical SPD attributes", async () => {
       const path = `/scotland/postcodes/${encodeURI(testPostcode)}`;
-      request(app)
+      const response = await request(app)
         .get(path)
         .expect("Content-Type", /json/)
-        .expect(200)
-        .end((error, response) => {
-          if (error) return done(error);
-          const { result } = response.body;
-          assert.equal(result.postcode, "AB10 1AB");
-          assert.equal(result.council_area, "Aberdeen City");
-          assert.equal(result.codes.council_area, "S12000033");
-          assert.isString(result.scottish_parliamentary_constituency);
-          assert.isObject(result.codes);
-          done();
-        });
+        .expect(200);
+      const { result } = response.body;
+      expect(result.postcode).toBe("AB10 1AB");
+      expect(result.council_area).toBe("Aberdeen City");
+      expect(result.codes.council_area).toBe("S12000033");
+      expect(typeof result.scottish_parliamentary_constituency).toBe("string");
+      expect(typeof result.codes).toBe("object");
     });
 
-    it("accepts padded postcode", (done) => {
+    it("accepts padded postcode", async () => {
       const postcode = "  " + testPostcode + "  ";
       const path = `/scotland/postcodes/${encodeURI(postcode)}`;
-      request(app)
+      const response = await request(app)
         .get(path)
         .expect("Content-Type", /json/)
-        .expect(200)
-        .end((error, response) => {
-          if (error) return done(error);
-          assert.equal(response.body.status, 200);
-          assert.equal(response.body.result.postcode, "AB10 1AB");
-          done();
-        });
+        .expect(200);
+      expect(response.body.status).toBe(200);
+      expect(response.body.result.postcode).toBe("AB10 1AB");
     });
 
-    it("404 if not a valid postcode according to the postcode module", (done) => {
+    it("404 if not a valid postcode according to the postcode module", async () => {
       const path = `/scotland/postcodes/foo`;
-      assert.isFalse(isValid("foo"));
-      request(app)
+      expect(isValid("foo")).toBe(false);
+      await request(app)
         .get(path)
         .expect("Content-Type", /json/)
-        .expect(404)
-        .end(done);
+        .expect(404);
     });
 
-    it("should return 404 if postcode not found", (done) => {
+    it("should return 404 if postcode not found", async () => {
       const postcode = "ID11QE";
       const path = `/scotland/postcodes/${encodeURI(postcode)}`;
-      request(app)
+      const response = await request(app)
         .get(path)
         .expect("Content-Type", /json/)
-        .expect(404)
-        .end((error, response) => {
-          if (error) return done(error);
-          assert.equal(response.body.status, 404);
-          assert.equal(response.body.error, error404Message);
-          done();
-        });
+        .expect(404);
+      expect(response.body.status).toBe(404);
+      expect(response.body.error).toBe(error404Message);
     });
   });
 });

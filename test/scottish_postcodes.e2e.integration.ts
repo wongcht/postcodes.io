@@ -1,11 +1,11 @@
 import request from "supertest";
-import { assert } from "chai";
+import { describe, expect, it } from "vitest";
 import * as helper from "./helper/index";
 const app = helper.postcodesioApplication();
 
 describe("Scottish postcodes E2E", () => {
   describe("GET /scotland/postcodes/:postcode", () => {
-    it("returns exact expected response for AB10 1AB", (done) => {
+    it("returns exact expected response for AB10 1AB", async () => {
       const expectedResponse = {
         postcode: "AB10 1AB",
         pc_compact: "AB101AB",
@@ -111,16 +111,12 @@ describe("Scottish postcodes E2E", () => {
         },
       };
 
-      request(app)
+      const response = await request(app)
         .get("/scotland/postcodes/AB10%201AB")
         .expect("Content-Type", /json/)
-        .expect(200)
-        .end((error, response) => {
-          if (error) return done(error);
-          assert.equal(response.body.status, 200);
-          assert.deepEqual(response.body.result, expectedResponse);
-          done();
-        });
+        .expect(200);
+      expect(response.body.status).toBe(200);
+      expect(response.body.result).toEqual(expectedResponse);
     });
   });
 });

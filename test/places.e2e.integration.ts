@@ -1,11 +1,11 @@
 import request from "supertest";
-import { assert } from "chai";
+import { describe, expect, it } from "vitest";
 import * as helper from "./helper/index";
 const app = helper.postcodesioApplication();
 
 describe("Places E2E", () => {
   describe("GET /places/:code", () => {
-    it("returns exact expected response for osgb4000000074558362", (done) => {
+    it("returns exact expected response for osgb4000000074558362", async () => {
       const expectedResponse = {
         code: "osgb4000000074558362",
         name_1: "Clestrain",
@@ -30,16 +30,12 @@ describe("Places E2E", () => {
         max_northings: 1009740,
       };
 
-      request(app)
+      const response = await request(app)
         .get("/places/osgb4000000074558362")
         .expect("Content-Type", /json/)
-        .expect(200)
-        .end((error, response) => {
-          if (error) return done(error);
-          assert.equal(response.body.status, 200);
-          assert.deepEqual(response.body.result, expectedResponse);
-          done();
-        });
+        .expect(200);
+      expect(response.body.status).toBe(200);
+      expect(response.body.result).toEqual(expectedResponse);
     });
   });
 });

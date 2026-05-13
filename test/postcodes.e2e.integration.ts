@@ -1,5 +1,5 @@
 import request from "supertest";
-import { assert } from "chai";
+import { describe, expect, it } from "vitest";
 import * as helper from "./helper/index";
 const app = helper.postcodesioApplication();
 
@@ -15,9 +15,9 @@ const app = helper.postcodesioApplication();
  * - Lookup table joins work correctly (districts, wards, constituencies, etc.)
  * - New fields (lsoa21, msoa21, lsoa11, msoa11, etc.) are populated correctly
  */
-describe("Postcodes E2E", function () {
-  describe("GET /postcodes/:postcode", function () {
-    it("returns exact expected response for AB10 1AB", function (done) {
+describe("Postcodes E2E", () => {
+  describe("GET /postcodes/:postcode", () => {
+    it("returns exact expected response for AB10 1AB", async () => {
       const expectedResponse: Record<string, unknown> = {
         postcode: "AB10 1AB",
         quality: 1,
@@ -96,19 +96,15 @@ describe("Postcodes E2E", function () {
         },
       };
 
-      request(app)
+      const response = await request(app)
         .get("/postcodes/AB10%201AB")
         .expect("Content-Type", /json/)
-        .expect(200)
-        .end(function (error, response) {
-          if (error) return done(error);
-          assert.equal(response.body.status, 200);
-          assert.deepEqual(response.body.result, expectedResponse);
-          done();
-        });
+        .expect(200);
+      expect(response.body.status).toBe(200);
+      expect(response.body.result).toEqual(expectedResponse);
     });
 
-    it("returns exact expected response for SE1P 5ZZ", function (done) {
+    it("returns exact expected response for SE1P 5ZZ", async () => {
       const expectedResponse: Record<string, unknown> = {
         postcode: "SE1P 5ZZ",
         quality: 1,
@@ -187,16 +183,12 @@ describe("Postcodes E2E", function () {
         },
       };
 
-      request(app)
+      const response = await request(app)
         .get("/postcodes/SE1P%205ZZ")
         .expect("Content-Type", /json/)
-        .expect(200)
-        .end(function (error, response) {
-          if (error) return done(error);
-          assert.equal(response.body.status, 200);
-          assert.deepEqual(response.body.result, expectedResponse);
-          done();
-        });
+        .expect(200);
+      expect(response.body.status).toBe(200);
+      expect(response.body.result).toEqual(expectedResponse);
     });
   });
 });
