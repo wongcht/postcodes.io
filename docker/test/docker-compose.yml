@@ -19,6 +19,4 @@ services:
       - pg
     volumes:
       - "../../:/app/"
-    ports:
-      - 8000:8000
     command: tail
