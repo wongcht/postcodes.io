@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  version: 3.5.1
+  version: 18.0.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -51,9 +51,13 @@ paths:
       summary: Lookup Postcode
       operationId: LookupPostcode
       description: |
-        ### Postcode Data (Ordnance Survey Postcode Directory Dataset)
+        ### Postcode Data
 
-        Data points returned by the /postcodes and /outcodes API
+        Lookup a UK postcode against the ONS Postcode Directory (ONSPD). The response is a fully resolved record — every administrative, electoral, statistical and health geography that ONSPD ships for the postcode is returned at the top level by its human-readable name, with the equivalent GSS / official codes mirrored under the `codes` object.
+
+        The same shape is returned by `/postcodes` (bulk + search), `/outcodes` (aggregated across an outward code), and the reverse-geocoding endpoints.
+
+        Returns `404` if the postcode does not exist or is not valid.
       parameters:
         - name: postcode
           in: path
@@ -334,11 +338,11 @@ paths:
       description: |
         Lookup a terminated postcode.
 
-        If the terminated postcode exists, this API returns the date of termination and last known geospatial coordinates.
+        If the terminated postcode exists, this API returns the year and month of termination plus its last known WGS84 coordinates. Channel Islands and Isle of Man postcodes do not carry coordinates — `longitude` and `latitude` will be `null` for those.
 
-        Returns `404` if postcode does not exist in our database of terminated postcodes or is not valid.
+        Returns `404` if the postcode does not exist in our database of terminated postcodes or is not valid.
 
-        Source: Ordnance Survey Postcode Directory Dataset
+        Source: ONS Postcode Directory (ONSPD). Live and terminated postcodes share the same underlying table; a postcode is terminated when `date_of_termination` is set.
       operationId: LookupTerminatedPostcode
       parameters:
         - name: postcode
@@ -376,13 +380,15 @@ paths:
       description: |
         Lookup a Scottish postcode.
 
-        Returns Scottish Postcode Directory (SPD) data associated with postcode. At the moment this is just Scottish Parliamentary Constituency.
+        Returns Scottish Postcode Directory (SPD) data associated with the postcode. The response covers the full SPD field set: council area, electoral ward, Scottish and UK parliamentary geographies, health board, integration authority, data zone, intermediate zone, output area, locality, settlement, civil parish, island, national park, travel-to-work area, ITL/LAU, urban-rural classification, SIMD rank, ROA, census counts, and the corresponding GSS / official codes under the `codes` object.
 
-        Returns `404` if postcode does not exist in SPD or is not valid.
+        Top-level fields hold the latest (canonical) value for each datapoint. Year-suffixed fields surface prior versions where the SPD publishes them.
 
-        For postcodes not in SPD but in ONSPD, a 404 is returned with the error message "Postcode exists in ONSPD but not in SPD."
+        Returns `404` if the postcode does not exist in SPD or is not valid.
 
-        Source: Scottish Postcode Directory
+        For postcodes not in SPD but present in ONSPD (i.e. non-Scottish postcodes), a `404` is returned with the error message "Postcode exists in ONSPD but not in SPD."
+
+        Source: Scottish Postcode Directory (National Records of Scotland).
       operationId: getScottishPostcode
       parameters:
         - name: postcode
@@ -1153,10 +1159,8 @@ components:
           enum:
             - 200
         result:
-          type: array
-          items:
-            $ref: '#/components/schemas/TerminatedPostcode'
-          description: Data for a given postcode
+          $ref: '#/components/schemas/TerminatedPostcode'
+          description: Data for the requested terminated postcode.
     ScottishPostcodes:
       type: object
       description: |
@@ -1799,7 +1803,7 @@ components:
               description: Code for the 2006 ROA local authority.
               example: S12000033
     ScottishPostcodeResponse:
-      title: Scottish Postcodes Response
+      title: Scottish Postcode Response
       type: object
       required:
         - status
@@ -1811,10 +1815,8 @@ components:
           enum:
             - 200
         result:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScottishPostcodes'
-          description: Data for a given postcode
+          $ref: '#/components/schemas/ScottishPostcodes'
+          description: Scottish Postcode Directory (SPD) data for the requested postcode.
     Outcode:
       required:
         - outcode
