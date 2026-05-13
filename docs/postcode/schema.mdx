@@ -30,6 +30,8 @@ The Postcode schema represents all geographical and administrative information a
   "parish": "Hextable",
   "admin_county": "Kent",
   "date_of_introduction": "198001",
+  "date_of_termination": null,
+  "index_of_multiple_deprivation": 22386,
   "admin_ward": "Hextable",
   "ced": "Swanley",
   "ccg": "NHS Kent and Medway",
@@ -126,6 +128,8 @@ The Postcode schema represents all geographical and administrative information a
 | `codes.pfa`                  | string \| null  | Official 9-character GSS code for this Police Force Area.                                                                                 | "E23000001"                        |
 | `pfa`                        | string \| null  | The police force area for this postcode.                                                                                                  | "Metropolitan Police"              |
 | `date_of_introduction`       | string \| null  | The date the postcode was introduced in YYYYMM format.                                                                                    | "198001"                           |
+| `date_of_termination`        | string \| null  | The date the postcode was terminated in YYYYMM format. `null` for live postcodes.                                                         | null                               |
+| `index_of_multiple_deprivation` | integer \| null | ONS Index of Multiple Deprivation (IMD) rank for this postcode's LSOA. Lower ranks correspond to more deprived areas. England, Wales, Scotland and Northern Ireland use independent IMD scales — values are not directly comparable across countries. | 14843 |
 | `parliamentary_constituency_2024` | string \| null | The UK Parliamentary constituency for this postcode based on July 2024 boundaries.                                                       | "Cities of London and Westminster" |
 | `nhs_region`                 | string \| null  | The NHS England Region for this postcode. Only applicable to English postcodes.                                                           | "London"                           |
 | `ttwa`                       | string \| null  | The Travel to Work Area for this postcode. TTWAs are areas where most people both live and work.                                          | "London"                           |
