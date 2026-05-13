@@ -92,7 +92,7 @@
     "@types/async": "~3.2.24",
     "@types/chai": "~5.2.3",
     "@types/cors": "~2.8.19",
-    "@types/express": "~5.0.3",
+    "@types/express": "5.0.3",
     "@types/minimist": "~1.2.5",
     "@types/mocha": "~10.0.10",
     "@types/morgan": "~1.9.10",
@@ -137,5 +137,11 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@10.33.3",
+  "pnpm": {
+    "overrides": {
+      "@types/express-serve-static-core": "5.0.6"
+    }
   }
 }
