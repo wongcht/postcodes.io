@@ -28,24 +28,10 @@ export interface OutcodeNearbyRow extends OutcodeRow {
   distance: number;
 }
 
-const AGGREGATE_COLUMNS = `
-  outcode,
-  AVG(longitude) AS longitude,
-  AVG(latitude) AS latitude,
-  ROUND(AVG(eastings))::int AS eastings,
-  ROUND(AVG(northings))::int AS northings,
-  array_agg(DISTINCT admin_district)
-    FILTER (WHERE admin_district IS NOT NULL AND admin_district <> '') AS admin_district,
-  array_agg(DISTINCT parish)
-    FILTER (WHERE parish IS NOT NULL AND parish <> '') AS parish,
-  array_agg(DISTINCT admin_county)
-    FILTER (WHERE admin_county IS NOT NULL AND admin_county <> '') AS admin_county,
-  array_agg(DISTINCT admin_ward)
-    FILTER (WHERE admin_ward IS NOT NULL AND admin_ward <> '') AS admin_ward,
-  array_agg(DISTINCT country)
-    FILTER (WHERE country IS NOT NULL AND country <> '') AS country,
-  array_agg(DISTINCT parliamentary_constituency)
-    FILTER (WHERE parliamentary_constituency IS NOT NULL AND parliamentary_constituency <> '') AS parliamentary_constituency
+const SELECT_COLUMNS = `
+  outcode, longitude, latitude, eastings, northings,
+  admin_district, parish, admin_county, admin_ward,
+  country, parliamentary_constituency
 `;
 
 const normaliseOutcode = (outcode: string): string =>
@@ -56,12 +42,9 @@ export const find = async (outcode?: string): Promise<OutcodeRow | null> => {
   const result = await query<OutcodeRow>({
     name: "outcodes_find",
     text: `
-      SELECT ${AGGREGATE_COLUMNS}
-      FROM pcio.onspd
+      SELECT ${SELECT_COLUMNS}
+      FROM pcio.outcodes
       WHERE outcode = $1
-        AND date_of_termination IS NULL
-        AND location IS NOT NULL
-      GROUP BY outcode
     `,
     values: [normaliseOutcode(outcode)],
   });
@@ -102,24 +85,17 @@ export const nearest = async (
     name: "outcodes_nearest",
     text: `
       SELECT
-        ${AGGREGATE_COLUMNS},
+        ${SELECT_COLUMNS},
         ST_Distance(
-          ST_MakePoint(AVG(longitude), AVG(latitude))::geography,
+          location,
           ST_MakePoint($1::float8, $2::float8)::geography
         ) AS distance
-      FROM pcio.onspd
-      WHERE date_of_termination IS NULL
-        AND location IS NOT NULL
-        AND outcode IN (
-          SELECT DISTINCT outcode
-          FROM pcio.onspd
-          WHERE ST_DWithin(
-            location,
-            ST_MakePoint($1::float8, $2::float8)::geography,
-            $3::float8
-          )
-        )
-      GROUP BY outcode
+      FROM pcio.outcodes
+      WHERE ST_DWithin(
+        location,
+        ST_MakePoint($1::float8, $2::float8)::geography,
+        $3::float8
+      )
       ORDER BY distance
       LIMIT $4::int
     `,

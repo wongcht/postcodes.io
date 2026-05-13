@@ -31,4 +31,6 @@ PSQL=(psql -h "$HOST" -p "$PORT" -U "$USER" --quiet)
 
 gunzip -c "$SEED" | "${PSQL[@]}" -d "$DB" -v ON_ERROR_STOP=1
 
+"${PSQL[@]}" -d "$DB" -v ON_ERROR_STOP=1 -f "$ROOT/db/matviews.sql" >/dev/null
+
 echo "loaded $(du -h "$SEED" | cut -f1) into $DB on $HOST:$PORT"
