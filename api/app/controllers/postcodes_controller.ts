@@ -1,6 +1,5 @@
 import { isEmpty, qToString } from "../lib/string";
 import { isValid } from "postcode";
-import { chunk } from "../lib/chunk";
 import { getConfig } from "../../config/config";
 import {
   InvalidPostcodeError,
@@ -10,15 +9,21 @@ import {
   ExceedMaxGeolocationsError,
   ExceedMaxPostcodesError,
   PostcodeQueryRequiredError,
+  InvalidGeolocationError,
+  InvalidLimitError,
+  InvalidRadiusError,
 } from "../lib/errors";
 import { Handler } from "../types/express";
 import {
   PostcodeRow,
   NearestPostcodesOptions,
+  ResolvedNearest,
   find,
+  findMany,
   search,
   random as randomPostcode,
   nearestPostcodes,
+  nearestPostcodesMany,
   toJson,
 } from "../queries/postcodes";
 import { find as findTerminated } from "../queries/terminated_postcodes";
@@ -79,13 +84,56 @@ export const bulk: Handler = (request, response, next) => {
 };
 
 const MAX_GEOLOCATIONS = defaults.bulkGeocode.geolocations.MAX;
-const GEO_ASYNC_LIMIT =
-  defaults.bulkGeocode.geolocations.ASYNC_LIMIT || MAX_GEOLOCATIONS;
 
 interface LookupGeolocationResult {
   query: { [index: string]: unknown };
   result: null | ReturnType<typeof toJson>[];
 }
+
+const QUERY_WHITELIST = ["limit", "longitude", "latitude", "radius", "widesearch"];
+const sanitizeGeoQuery = (q: NearestPostcodesOptions) => {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(q)) {
+    if (QUERY_WHITELIST.indexOf(key.toLowerCase()) !== -1) result[key] = value;
+  }
+  return result;
+};
+
+const isWidesearch = (l: NearestPostcodesOptions) =>
+  !!l.widesearch || !!l.wideSearch;
+
+const clampLimit = (raw: string | undefined): number => {
+  let limit = defaults.nearest.limit.DEFAULT;
+  if (raw !== undefined) {
+    limit = parseInt(raw, 10);
+    if (isNaN(limit)) throw new InvalidLimitError();
+  }
+  if (limit > defaults.nearest.limit.MAX) limit = defaults.nearest.limit.MAX;
+  return limit;
+};
+
+const clampRadius = (raw: string | undefined): number => {
+  let radius = defaults.nearest.radius.DEFAULT;
+  if (raw !== undefined) {
+    radius = parseFloat(raw);
+    if (isNaN(radius)) throw new InvalidRadiusError();
+  }
+  if (radius > defaults.nearest.radius.MAX) radius = defaults.nearest.radius.MAX;
+  return radius;
+};
+
+const resolveNearest = (l: NearestPostcodesOptions): ResolvedNearest => {
+  const longitude = parseFloat(l.longitude);
+  if (isNaN(longitude)) throw new InvalidGeolocationError();
+  const latitude = parseFloat(l.latitude);
+  if (isNaN(latitude)) throw new InvalidGeolocationError();
+  return {
+    longitude,
+    latitude,
+    limit: clampLimit(l.limit),
+    radius: clampRadius(l.radius),
+  };
+};
 
 const bulkGeocode: Handler = async (request, response, next) => {
   try {
@@ -104,44 +152,43 @@ const bulkGeocode: Handler = async (request, response, next) => {
     if (geolocations.length > MAX_GEOLOCATIONS)
       return next(new ExceedMaxGeolocationsError());
 
-    const data: LookupGeolocationResult[] = new Array(geolocations.length);
+    const merged: NearestPostcodesOptions[] = geolocations.map((g) => ({
+      ...(globalLimit && { limit: globalLimit }),
+      ...(globalRadius && { radius: globalRadius }),
+      ...(globalWidesearch && { widesearch: true }),
+      ...g,
+    }));
 
-    const whitelist = ["limit", "longitude", "latitude", "radius", "widesearch"];
-    const sanitizeQuery = (q: NearestPostcodesOptions) => {
-      const result: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(q)) {
-        if (whitelist.indexOf(key.toLowerCase()) !== -1) result[key] = value;
-      }
-      return result;
-    };
+    const data: LookupGeolocationResult[] = new Array(merged.length);
+    const batchIdx: number[] = [];
+    const batchResolved: ResolvedNearest[] = [];
 
-    const lookupGeolocation = async (
-      location: NearestPostcodesOptions,
-      i: number
-    ): Promise<void> => {
-      const postcodes = await nearestPostcodes(location);
-      data[i] = {
-        query: sanitizeQuery(location),
-        result: postcodes && postcodes.length > 0 ? postcodes.map(toJson) : null,
-      };
-    };
-
-    const queue = chunk(
-      geolocations.map((geolocation, i) =>
-        lookupGeolocation(
-          {
-            ...(globalLimit && { limit: globalLimit }),
-            ...(globalRadius && { radius: globalRadius }),
-            ...(globalWidesearch && { widesearch: true }),
-            ...geolocation,
-          },
-          i
-        )
-      ),
-      GEO_ASYNC_LIMIT
+    await Promise.all(
+      merged.map(async (location, i) => {
+        if (isWidesearch(location)) {
+          const postcodes = await nearestPostcodes(location);
+          data[i] = {
+            query: sanitizeGeoQuery(location),
+            result:
+              postcodes && postcodes.length > 0 ? postcodes.map(toJson) : null,
+          };
+          return;
+        }
+        batchIdx.push(i);
+        batchResolved.push(resolveNearest(location));
+      })
     );
 
-    for (const q of queue) await Promise.all(q);
+    if (batchResolved.length > 0) {
+      const batched = await nearestPostcodesMany(batchResolved);
+      batched.forEach((rows, j) => {
+        const i = batchIdx[j];
+        data[i] = {
+          query: sanitizeGeoQuery(merged[i]),
+          result: rows.length > 0 ? rows.map(toJson) : null,
+        };
+      });
+    }
 
     response.jsonApiResponse = { status: 200, result: data };
     next();
@@ -151,8 +198,6 @@ const bulkGeocode: Handler = async (request, response, next) => {
 };
 
 const MAX_POSTCODES = defaults.bulkLookups.postcodes.MAX;
-const BULK_ASYNC_LIMIT =
-  defaults.bulkLookups.postcodes.ASYNC_LIMIT || MAX_POSTCODES;
 
 interface BulkLookupPostcodesResult {
   query: string;
@@ -166,20 +211,23 @@ const bulkLookupPostcodes: Handler = async (request, response, next) => {
     if (postcodes.length > MAX_POSTCODES)
       return next(new ExceedMaxPostcodesError());
 
-    const p = postcodes.filter((pc) => typeof pc === "string");
-    const result: BulkLookupPostcodesResult[] = new Array(p.length);
+    const inputs = postcodes.filter((pc): pc is string => typeof pc === "string");
+    const compacts: (string | null)[] = inputs.map((pc) => {
+      const t = pc.trim().toUpperCase();
+      return isValid(t) ? t.replace(/\s/g, "") : null;
+    });
 
-    const lookupPostcode = async (postcode: string, i: number): Promise<void> => {
-      const info = await find(postcode);
-      result[i] = { query: postcode, result: info ? toJson(info) : null };
-    };
-
-    const queue: Promise<void>[][] = chunk(
-      p.map(lookupPostcode),
-      BULK_ASYNC_LIMIT
+    const unique = Array.from(
+      new Set(compacts.filter((c): c is string => c !== null))
     );
+    const rows = await findMany(unique);
+    const byCompact = new Map(rows.map((r) => [r.pc_compact, r]));
 
-    for (const queries of queue) await Promise.all(queries);
+    const result: BulkLookupPostcodesResult[] = inputs.map((pc, i) => {
+      const compact = compacts[i];
+      const row = compact ? byCompact.get(compact) : undefined;
+      return { query: pc, result: row ? toJson(row) : null };
+    });
 
     response.jsonApiResponse = { status: 200, result };
     next();

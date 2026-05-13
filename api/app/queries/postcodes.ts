@@ -139,6 +139,23 @@ export const find = async (
   return result.rows[0] ?? null;
 };
 
+export const findMany = async (
+  compacts: string[]
+): Promise<PostcodeRow[]> => {
+  if (compacts.length === 0) return [];
+  const result = await query<PostcodeRow>({
+    name: "postcodes_find_many",
+    text: `
+      SELECT ${SELECT_COLUMNS}
+      FROM pcio.onspd
+      WHERE replace(postcode, ' ', '') = ANY($1::text[])
+        AND date_of_termination IS NULL
+    `,
+    values: [compacts],
+  });
+  return result.rows;
+};
+
 interface SearchOptions {
   postcode: string;
   limit?: string;
@@ -276,6 +293,68 @@ export const nearestPostcodes = async (
   });
   if (result.rows.length === 0) return null;
   return result.rows;
+};
+
+export interface ResolvedNearest {
+  longitude: number;
+  latitude: number;
+  limit: number;
+  radius: number;
+}
+
+export const nearestPostcodesMany = async (
+  items: ResolvedNearest[]
+): Promise<Array<PostcodeRow[]>> => {
+  if (items.length === 0) return [];
+  const idx: number[] = [];
+  const lng: number[] = [];
+  const lat: number[] = [];
+  const radii: number[] = [];
+  const limits: number[] = [];
+  items.forEach((it, i) => {
+    idx.push(i);
+    lng.push(it.longitude);
+    lat.push(it.latitude);
+    radii.push(it.radius);
+    limits.push(it.limit);
+  });
+
+  const result = await query<PostcodeRow & { idx: number }>({
+    name: "postcodes_nearest_many",
+    text: `
+      WITH inputs AS (
+        SELECT *
+        FROM UNNEST(
+          $1::int[], $2::float8[], $3::float8[], $4::float8[], $5::int[]
+        ) AS t(idx, lng, lat, radius, lim)
+      )
+      SELECT i.idx, ${SELECT_COLUMNS},
+        ST_Distance(o.location, ST_MakePoint(i.lng, i.lat)::geography) AS distance
+      FROM inputs i
+      JOIN LATERAL (
+        SELECT *
+        FROM pcio.onspd
+        WHERE date_of_termination IS NULL
+          AND ST_DWithin(
+            location,
+            ST_MakePoint(i.lng, i.lat)::geography,
+            i.radius
+          )
+        ORDER BY ST_Distance(
+          location, ST_MakePoint(i.lng, i.lat)::geography
+        ) ASC, postcode ASC
+        LIMIT i.lim
+      ) o ON true
+      ORDER BY i.idx, distance ASC, o.postcode ASC
+    `,
+    values: [idx, lng, lat, radii, limits],
+  });
+
+  const grouped: PostcodeRow[][] = items.map((): PostcodeRow[] => []);
+  for (const row of result.rows) {
+    grouped[row.idx].push(row);
+  }
+  return grouped;
 };
 
 const START_RANGE = 500;
