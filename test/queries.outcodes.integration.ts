@@ -2,7 +2,7 @@
 // Re-capture with `pnpm vitest run test/queries.outcodes.integration.ts -u`.
 
 import { describe, expect, it } from "vitest";
-import { find, nearest } from "../api/app/queries/outcodes";
+import { find, nearest, toJson } from "../api/app/queries/outcodes";
 
 const ANCHOR = { longitude: "-2.096923", latitude: "57.14959" };
 
@@ -210,6 +210,40 @@ describe("queries/outcodes (contract)", () => {
       await expect(
         nearest({ longitude: "0", latitude: "x" })
       ).rejects.toThrowErrorMatchingInlineSnapshot(`[PostcodesioHttpError: PostcodesIO HTTP Error: 400 Invalid longitude/latitude submitted]`);
+    });
+  });
+  describe("toJson()", () => {
+    it("shapes a known outcode row into the public JSON response", async () => {
+      const row = await find("AB10");
+      expect(row && toJson(row)).toMatchInlineSnapshot(`
+        {
+          "admin_county": null,
+          "admin_district": [
+            "Aberdeen City",
+          ],
+          "admin_ward": [
+            "Airyhall/Broomhill/Garthdee",
+            "George St/Harbour",
+            "Hazlehead/Queens Cross/Countesswells",
+            "Kincorth/Nigg/Cove",
+            "Midstocket/Rosemount",
+            "Torry/Ferryhill",
+          ],
+          "country": [
+            "Scotland",
+          ],
+          "eastings": 392788,
+          "latitude": 57.13536881306988,
+          "longitude": -2.1207891580547114,
+          "northings": 804948,
+          "outcode": "AB10",
+          "parish": null,
+          "parliamentary_constituency": [
+            "Aberdeen North",
+            "Aberdeen South",
+          ],
+        }
+      `);
     });
   });
 });

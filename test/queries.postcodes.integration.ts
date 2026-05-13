@@ -11,6 +11,7 @@ import {
   nearestPostcodesMany,
   random,
   search,
+  toJson,
 } from "../api/app/queries/postcodes";
 
 // AB10 1AB is a live postcode in the seed (lat 57.14959, lng -2.096923).
@@ -2434,6 +2435,90 @@ describe("queries/postcodes (contract)", () => {
       } finally {
         Math.random = originalRandom;
       }
+    });
+  });
+
+  describe("toJson()", () => {
+    it("shapes a known live postcode row into the public JSON response", async () => {
+      const row = await find(KNOWN_LIVE);
+      expect(row && toJson(row)).toMatchInlineSnapshot(`
+        {
+          "admin_county": null,
+          "admin_district": "Aberdeen City",
+          "admin_ward": "George St/Harbour",
+          "bua": null,
+          "cancer_alliance": null,
+          "ccg": "Aberdeen City Community Health Partnership",
+          "ced": null,
+          "codes": {
+            "admin_county": null,
+            "admin_district": "S12000033",
+            "admin_ward": "S13002842",
+            "bua": null,
+            "cancer_alliance": null,
+            "ccg": "S03000012",
+            "ccg_id": "012",
+            "ced": null,
+            "icb": null,
+            "lau2": "S30000026",
+            "lep1": null,
+            "lep2": null,
+            "lsoa": "S01013627",
+            "lsoa11": "S01006646",
+            "lsoa21": "S01013627",
+            "msoa": "S02002541",
+            "msoa11": "S02001261",
+            "msoa21": "S02002541",
+            "national_park": null,
+            "nhs_region": null,
+            "nuts": "TLM50",
+            "oa21": "S00136377",
+            "parish": null,
+            "parliamentary_constituency": "S14000061",
+            "parliamentary_constituency_2024": "S14000061",
+            "pfa": "S23000009",
+            "ruc11": "1",
+            "ruc21": "1",
+            "ttwa": "S22000047",
+          },
+          "country": "Scotland",
+          "date_of_introduction": "201106",
+          "date_of_termination": null,
+          "eastings": 394235,
+          "european_electoral_region": "Scotland",
+          "icb": null,
+          "incode": "1AB",
+          "index_of_multiple_deprivation": 3888,
+          "latitude": 57.14959,
+          "lep1": null,
+          "lep2": null,
+          "longitude": -2.096923,
+          "lsoa": "George Street - 02",
+          "lsoa11": "George Street - 02",
+          "lsoa21": "George Street - 02",
+          "msoa": "George Street",
+          "msoa11": "George Street",
+          "msoa21": "George Street",
+          "national_park": null,
+          "nhs_ha": "Grampian",
+          "nhs_region": null,
+          "northings": 806529,
+          "nuts": "Aberdeen City",
+          "oa21": "S00136377",
+          "outcode": "AB10",
+          "parish": null,
+          "parliamentary_constituency": "Aberdeen South",
+          "parliamentary_constituency_2024": "Aberdeen South",
+          "pfa": "Scotland",
+          "postcode": "AB10 1AB",
+          "primary_care_trust": "Aberdeen City Community Health Partnership",
+          "quality": 1,
+          "region": null,
+          "ruc11": "(Scotland) Large Urban Area",
+          "ruc21": "Large Urban Areas",
+          "ttwa": "Aberdeen",
+        }
+      `);
     });
   });
 });

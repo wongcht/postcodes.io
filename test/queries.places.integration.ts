@@ -5,7 +5,7 @@
 // Re-capture with `pnpm vitest run test/queries.places.integration.ts -u`.
 
 import { describe, expect, it } from "vitest";
-import { findByCode, random, search } from "../api/app/queries/places";
+import { findByCode, random, search, toJson } from "../api/app/queries/places";
 
 const KNOWN_CODE = "osgb4000000074335381"; // "Rapness" in the seed
 
@@ -170,6 +170,37 @@ describe("queries/places (contract)", () => {
       } finally {
         Math.random = originalRandom;
       }
+    });
+  });
+
+  describe("toJson()", () => {
+    it("shapes a known place row into the public JSON response", async () => {
+      const row = await findByCode(KNOWN_CODE);
+      expect(row && toJson(row)).toMatchInlineSnapshot(`
+        {
+          "code": "osgb4000000074335381",
+          "country": "Scotland",
+          "county_unitary": "Orkney Islands",
+          "county_unitary_type": "UnitaryAuthority",
+          "district_borough": null,
+          "district_borough_type": null,
+          "eastings": 350579,
+          "latitude": 59.24447732296904,
+          "local_type": "Village",
+          "longitude": -2.86809907870848,
+          "max_eastings": 351500,
+          "max_northings": 1042451,
+          "min_eastings": 349191,
+          "min_northings": 1039006,
+          "name_1": "Rapness",
+          "name_1_lang": null,
+          "name_2": null,
+          "name_2_lang": null,
+          "northings": 1040090,
+          "outcode": "KW17",
+          "region": "Scotland",
+        }
+      `);
     });
   });
 });
