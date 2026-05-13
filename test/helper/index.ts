@@ -56,8 +56,6 @@ const lookupRandomPostcode = async () => randomPostcodeQuery();
 
 // HTTP Helpers
 export * from "./http";
-// PG helper methods
-export * from "./pg";
 
 export {
   configFactory,
