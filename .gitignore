@@ -21,4 +21,5 @@ CLAUDE.md
 missing.json
 .claude
 plan
+bench
 /*.sql.gz
