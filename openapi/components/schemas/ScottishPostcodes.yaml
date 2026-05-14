@@ -51,9 +51,10 @@ properties:
     example: "AB10 1"
   user_type:
     title: User Type
-    type: integer
-    description: SPD user-type indicator (0 = small user, 1 = large user).
-    example: 0
+    type: string
+    nullable: true
+    description: SPD user-type indicator ("0" = small user, "1" = large user).
+    example: "0"
   date_of_introduction:
     title: Date of Introduction
     type: string

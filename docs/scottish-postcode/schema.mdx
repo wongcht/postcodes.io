@@ -18,7 +18,7 @@ Top-level fields hold the **canonical (latest)** value for each datapoint. Year-
     "postcode_sector": "AB10 1",
     "incode": "1XG",
     "outcode": "AB10",
-    "user_type": 0,
+    "user_type": "0",
     "date_of_introduction": "199406",
     "date_of_deletion": null,
     "longitude": -2.10250,
@@ -81,7 +81,7 @@ Top-level fields hold the **canonical (latest)** value for each datapoint. Year-
 | `postcode_district`            | string          | Equivalent to the outward code.                                                                | "AB10"        |
 | `postcode_sector`              | string          | Outward code plus the first character of the inward code.                                      | "AB10 1"      |
 | `outcode` / `incode`           | string          | Outward / inward halves of the postcode.                                                       | "AB10" / "1XG" |
-| `user_type`                    | integer         | SPD user type (0 = small user, 1 = large user).                                                | 0             |
+| `user_type`                    | string \| null  | SPD user type ("0" = small user, "1" = large user).                                            | "0"           |
 | `date_of_introduction`         | string \| null  | Date the postcode was introduced (YYYYMM).                                                     | "199406"      |
 | `date_of_deletion`             | string \| null  | Date the postcode was deleted (YYYYMM); `null` for live postcodes.                             | null          |
 | `linked_small_user_postcode`   | string \| null  | For large-user postcodes, the linked small-user postcode (if any).                             | null          |

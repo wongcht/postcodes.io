@@ -10,6 +10,8 @@ describe("queries/terminated_postcodes (contract)", () => {
   describe("find()", () => {
     it("returns the row for a known terminated postcode", async () => {
       expect(await find(KNOWN_TERMINATED)).toEqual({
+        eastings: 394251,
+        northings: 806376,
         latitude: 57.148216,
         longitude: -2.096655,
         month_terminated: 10,
@@ -22,6 +24,8 @@ describe("queries/terminated_postcodes (contract)", () => {
     });
     it("normalises whitespace and case", async () => {
       expect(await find("  ab10 1aa  ")).toEqual({
+        eastings: 394251,
+        northings: 806376,
         latitude: 57.148216,
         longitude: -2.096655,
         month_terminated: 10,
@@ -42,6 +46,8 @@ describe("queries/terminated_postcodes (contract)", () => {
     it("shapes a known terminated row into the public JSON response", async () => {
       const row = await find(KNOWN_TERMINATED);
       expect(row && toJson(row)).toEqual({
+        eastings: 394251,
+        northings: 806376,
         latitude: 57.148216,
         longitude: -2.096655,
         month_terminated: 10,

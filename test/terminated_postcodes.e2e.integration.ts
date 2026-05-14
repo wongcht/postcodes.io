@@ -10,6 +10,8 @@ describe("Terminated postcodes E2E", () => {
         postcode: "AB10 1AA",
         year_terminated: 2016,
         month_terminated: 10,
+        eastings: 394251,
+        northings: 806376,
         longitude: -2.096655,
         latitude: 57.148216,
       };

@@ -25,17 +25,19 @@ describe("Terminated postcode route", () => {
       expect(Object.keys(response.body).length).toBe(2);
       expect(response.body.result.postcode).toBe(testTerminatedPostcode);
     });
-    it("only returns postcode, month and year of termination, longitude and latitude", async () => {
+    it("only returns postcode, month and year of termination, eastings, northings, longitude and latitude", async () => {
       path = `/terminated_postcodes/${encodeURI(testTerminatedPostcode)}`;
       const response = await request(app)
         .get(path)
         .expect("Content-Type", /json/)
         .expect(200);
       const result = response.body.result;
-      expect(Object.keys(result).length).toBe(5);
+      expect(Object.keys(result).length).toBe(7);
       expect(result.postcode).toBeDefined();
       expect(result.year_terminated).toBeDefined();
       expect(result.month_terminated).toBeDefined();
+      expect(result.eastings).toBeDefined();
+      expect(result.northings).toBeDefined();
       expect(result.longitude).toBeDefined();
       expect(result.latitude).toBeDefined();
     });
