@@ -19,6 +19,11 @@ up:
 down:
 	docker compose -f docker/dev/docker-compose.yml down
 
+## Terminate development environment and wipe the database volume
+.PHONY: wipe
+wipe:
+	docker compose -f docker/dev/docker-compose.yml down -v
+
 ## Tail development service logs
 .PHONY: logs
 logs:
@@ -45,6 +50,11 @@ test-up:
 .PHONY: test-down
 test-down:
 	docker compose -f docker/test/docker-compose.yml down
+
+## Drop and reseed the test database from test/seed/v13.sql.gz
+.PHONY: test-seed
+test-seed:
+	docker compose -f docker/test/docker-compose.yml exec api pnpm run test:create
 
 ## Shell into test container
 .PHONY: test-shell
