@@ -2486,6 +2486,8 @@ describe("queries/postcodes (contract)", () => {
         region: null,
         ruc11: "(Scotland) Large Urban Area",
         ruc21: "Large Urban Areas",
+        senedd_constituency: null,
+        senedd_constituency_no: null,
         ttwa: "Aberdeen",
       });
     });

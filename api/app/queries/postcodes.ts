@@ -29,6 +29,8 @@ export interface PostcodeRow {
   admin_ward: string | null;
   parish: string | null;
   parliamentary_constituency: string | null;
+  senedd_constituency: string | null;
+  senedd_constituency_no: number | null;
   ced: string | null;
   ccg: string | null;
   nuts: string | null;
@@ -105,6 +107,7 @@ const SELECT_COLUMNS = `
   admin_ward,
   parish,
   parliamentary_constituency,
+  senedd_constituency, senedd_constituency_no,
   ced, ccg, nuts, pfa,
   nhs_region, ttwa, national_park, bua, icb, cancer_alliance,
   lsoa, lsoa11, lsoa21,
@@ -446,6 +449,8 @@ export const toJson = (p: PostcodeRow) => ({
   outcode: p.outcode,
   parliamentary_constituency: p.parliamentary_constituency,
   parliamentary_constituency_2024: p.parliamentary_constituency,
+  senedd_constituency: p.senedd_constituency,
+  senedd_constituency_no: p.senedd_constituency_no,
   admin_district: p.admin_district,
   parish: p.parish,
   admin_county: p.admin_county,
