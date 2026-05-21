@@ -1,28 +1,22 @@
-FROM node:24-slim AS base
+FROM node:24-slim
 
 RUN apt-get update && \
   apt-get install -y --no-install-recommends openssl bash git postgresql-client ca-certificates wget && \
-  rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/* && \
+  corepack enable
 
-ENV DOCKERIZE_VERSION v0.6.1
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+ENV DOCKERIZE_VERSION=v0.6.1
+RUN wget -q https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-
-RUN corepack enable
 
 COPY docker/test/entrypoint.sh /usr/bin/
 ENTRYPOINT ["entrypoint.sh"]
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# No `pnpm install` here. The docker-compose mount bind-mounts the host repo
+# over /app at runtime, so any node_modules baked in here gets shadowed.
+# pnpm 11's deps-status-check auto-installs on first script run.
 
-RUN pnpm install --frozen-lockfile
-
-ADD . /app
-
-# Build TypeScript files
-RUN mkdir -p dist/bin && pnpm run build && ls -la dist/
-
-CMD tail
+CMD ["tail"]

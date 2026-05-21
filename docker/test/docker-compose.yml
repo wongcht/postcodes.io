@@ -15,6 +15,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postcodesio
       POSTGRES_DATABASE: postcodeio_testing
+      CI: "true"
     depends_on:
       - pg
     volumes:
