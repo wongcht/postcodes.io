@@ -50,7 +50,8 @@ emit_copy() {
   echo
   echo "CREATE EXTENSION IF NOT EXISTS postgis;"
   echo
-  "${PG_DUMP[@]}" --schema-only --section=pre-data -n public
+  "${PG_DUMP[@]}" --schema-only --section=pre-data -n public \
+    | sed 's/^CREATE SCHEMA public;$/CREATE SCHEMA IF NOT EXISTS public;/'
   echo
   emit_copy postcodes "$POSTCODES_FILTER"
   emit_copy places "$PLACES_FILTER"
