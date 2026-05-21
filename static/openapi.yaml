@@ -748,6 +748,19 @@ components:
           nullable: true
           description: The UK Parliamentary constituency for this postcode based on July 2024 boundaries.
           example: Cities of London and Westminster
+        senedd_constituency:
+          title: Senedd Cymru Constituency
+          type: string
+          nullable: true
+          description: The Senedd Cymru (Welsh Parliament) constituency for this postcode. Only applicable to Welsh postcodes; null elsewhere.
+          example: null
+        senedd_constituency_no:
+          title: Senedd Cymru Constituency Number
+          type: integer
+          format: int32
+          nullable: true
+          description: The Senedd Cymru (Welsh Parliament) constituency number for this postcode. Only applicable to Welsh postcodes; null elsewhere.
+          example: null
         nhs_region:
           title: NHS England Region
           type: string

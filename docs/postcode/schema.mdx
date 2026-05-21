@@ -26,6 +26,8 @@ The Postcode schema represents all geographical and administrative information a
   "outcode": "BR8",
   "parliamentary_constituency": "Sevenoaks",
   "parliamentary_constituency_2024": "Sevenoaks",
+  "senedd_constituency": null,
+  "senedd_constituency_no": null,
   "admin_district": "Sevenoaks",
   "parish": "Hextable",
   "admin_county": "Kent",
@@ -132,6 +134,8 @@ The Postcode schema represents all geographical and administrative information a
 | `date_of_termination`        | string \| null  | The date the postcode was terminated in YYYYMM format. `null` for live postcodes.                                                         | null                               |
 | `index_of_multiple_deprivation` | integer \| null | ONS Index of Multiple Deprivation (IMD) rank for this postcode's LSOA. Lower ranks correspond to more deprived areas. England, Wales, Scotland and Northern Ireland use independent IMD scales — values are not directly comparable across countries. | 14843 |
 | `parliamentary_constituency_2024` | string \| null | The UK Parliamentary constituency for this postcode based on July 2024 boundaries.                                                       | "Cities of London and Westminster" |
+| `senedd_constituency`        | string \| null  | The Senedd Cymru (Welsh Parliament) constituency for this postcode. Only applicable to Welsh postcodes; null elsewhere.                   | "Cardiff Central"                  |
+| `senedd_constituency_no`     | integer \| null | The Senedd Cymru (Welsh Parliament) constituency number for this postcode. Only applicable to Welsh postcodes; null elsewhere.            | 7                                  |
 | `nhs_region`                 | string \| null  | The NHS England Region for this postcode. Only applicable to English postcodes.                                                           | "London"                           |
 | `ttwa`                       | string \| null  | The Travel to Work Area for this postcode. TTWAs are areas where most people both live and work.                                          | "London"                           |
 | `national_park`              | string \| null  | The National Park this postcode falls within, if any.                                                                                     | null                               |
