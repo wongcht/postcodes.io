@@ -32,7 +32,7 @@ export const find = async (
     name: "terminated_postcodes_find",
     text: `
       SELECT postcode, date_of_termination, eastings, northings, longitude, latitude
-      FROM pcio.onspd
+      FROM public.postcodes
       WHERE replace(postcode, ' ', '') = $1
         AND date_of_termination IS NOT NULL
       LIMIT 1

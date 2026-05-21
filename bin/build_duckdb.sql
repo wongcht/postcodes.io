@@ -35,7 +35,7 @@ FROM postgres_query('pg', $q$
     lep1_id, lep1, lep2_id, lep2,
     index_of_multiple_deprivation,
     ST_AsBinary(location::geometry) AS location_wkb
-  FROM pcio.onspd
+  FROM public.postcodes
 $q$);
 
 -- opennames: ~43k rows, two geography columns, two tsvector columns dropped
@@ -56,7 +56,7 @@ FROM postgres_query('pg', $q$
     region, country,
     ST_AsBinary(location::geometry) AS location_wkb,
     ST_AsBinary(bounding_polygon::geometry) AS bounding_polygon_wkb
-  FROM pcio.opennames
+  FROM public.places
 $q$);
 
 -- spd: ~162k rows, one geography column
@@ -65,7 +65,7 @@ SELECT * EXCLUDE (location_wkb),
        ST_GeomFromWKB(location_wkb) AS location
 FROM postgres_query('pg', $q$
   SELECT *, ST_AsBinary(location::geometry) AS location_wkb
-  FROM (SELECT pcio.spd.* FROM pcio.spd) s
+  FROM (SELECT public.scottish_postcodes.* FROM public.scottish_postcodes) s
 $q$);
 
 -- Btree indexes on the lookup columns the API hits hardest.

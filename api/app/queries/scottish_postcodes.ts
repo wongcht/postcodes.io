@@ -214,7 +214,7 @@ export const find = async (
     name: "scottish_postcodes_find",
     text: `
       SELECT ${SELECT_COLUMNS}
-      FROM pcio.spd
+      FROM public.scottish_postcodes
       WHERE pc_compact = $1
         AND date_of_deletion IS NULL
       LIMIT 1

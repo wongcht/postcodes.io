@@ -25,7 +25,7 @@ const getRandom = (max: number) => Math.ceil(Math.random() * max);
 
 const QueryTerminatedPostcode = `
 	SELECT postcode
-	FROM pcio.onspd
+	FROM public.postcodes
 	WHERE date_of_termination IS NOT NULL
 	LIMIT 1 OFFSET $1
 `;

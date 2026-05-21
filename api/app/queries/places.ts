@@ -44,7 +44,7 @@ export const findByCode = async (code: string): Promise<PlaceRow | null> => {
   if (typeof code !== "string") return null;
   const result = await query<PlaceRow>({
     name: "places_find_by_code",
-    text: `SELECT ${SELECT_COLUMNS} FROM pcio.opennames WHERE code = $1`,
+    text: `SELECT ${SELECT_COLUMNS} FROM public.places WHERE code = $1`,
     values: [code.toLowerCase()],
   });
   return result.rows[0] ?? null;
@@ -88,7 +88,7 @@ const termsSearch = async (
     name: "places_terms_search",
     text: `
       SELECT ${SELECT_COLUMNS}
-      FROM pcio.opennames
+      FROM public.places
       WHERE name_1_search_ts @@ phraseto_tsquery('simple', $1)
         OR name_2_search_ts @@ phraseto_tsquery('simple', $1)
       ORDER BY GREATEST(
@@ -112,7 +112,7 @@ const prefixSearch = async (
     name: "places_prefix_search",
     text: `
       SELECT ${SELECT_COLUMNS}
-      FROM pcio.opennames
+      FROM public.places
       WHERE name_1_search ~ $1 OR name_2_search ~ $1
       LIMIT $2
     `,
@@ -126,7 +126,7 @@ let codeCache: string[] | null = null;
 
 const loadCodes = async (): Promise<string[]> => {
   const result = await query<{ code: string }>(
-    "SELECT code FROM pcio.opennames"
+    "SELECT code FROM public.places"
   );
   return result.rows.map((r) => r.code);
 };

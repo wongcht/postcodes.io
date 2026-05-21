@@ -43,7 +43,7 @@ export const find = async (outcode?: string): Promise<OutcodeRow | null> => {
     name: "outcodes_find",
     text: `
       SELECT ${SELECT_COLUMNS}
-      FROM pcio.outcodes
+      FROM public.outcodes
       WHERE outcode = $1
     `,
     values: [normaliseOutcode(outcode)],
@@ -90,7 +90,7 @@ export const nearest = async (
           location,
           ST_MakePoint($1::float8, $2::float8)::geography
         ) AS distance
-      FROM pcio.outcodes
+      FROM public.outcodes
       WHERE ST_DWithin(
         location,
         ST_MakePoint($1::float8, $2::float8)::geography,

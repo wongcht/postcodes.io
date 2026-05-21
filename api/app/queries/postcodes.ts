@@ -132,7 +132,7 @@ export const find = async (
     name: "postcodes_find",
     text: `
       SELECT ${SELECT_COLUMNS}
-      FROM pcio.onspd
+      FROM public.postcodes
       WHERE replace(postcode, ' ', '') = $1
         AND date_of_termination IS NULL
       LIMIT 1
@@ -150,7 +150,7 @@ export const findMany = async (
     name: "postcodes_find_many",
     text: `
       SELECT ${SELECT_COLUMNS}
-      FROM pcio.onspd
+      FROM public.postcodes
       WHERE replace(postcode, ' ', '') = ANY($1::text[])
         AND date_of_termination IS NULL
     `,
@@ -210,7 +210,7 @@ const searchByPostcode = async (
     name: "postcodes_search_by_postcode",
     text: `
       SELECT ${SELECT_COLUMNS}
-      FROM pcio.onspd
+      FROM public.postcodes
       WHERE postcode >= $1
         AND date_of_termination IS NULL
       ORDER BY postcode ASC
@@ -229,7 +229,7 @@ const searchByPcCompact = async (
     name: "postcodes_search_by_pc_compact",
     text: `
       SELECT ${SELECT_COLUMNS}
-      FROM pcio.onspd
+      FROM public.postcodes
       WHERE replace(postcode, ' ', '') >= $1
         AND date_of_termination IS NULL
       ORDER BY replace(postcode, ' ', '') ASC
@@ -286,7 +286,7 @@ export const nearestPostcodes = async (
       SELECT
         ${SELECT_COLUMNS},
         ST_Distance(location, ST_MakePoint($1::float8, $2::float8)::geography) AS distance
-      FROM pcio.onspd
+      FROM public.postcodes
       WHERE date_of_termination IS NULL
         AND ST_DWithin(location, ST_MakePoint($1::float8, $2::float8)::geography, $3::float8)
       ORDER BY distance ASC, postcode ASC
@@ -336,7 +336,7 @@ export const nearestPostcodesMany = async (
       FROM inputs i
       JOIN LATERAL (
         SELECT *
-        FROM pcio.onspd
+        FROM public.postcodes
         WHERE date_of_termination IS NULL
           AND ST_DWithin(
             location,
@@ -374,7 +374,7 @@ const countWithin = async (
     name: "postcodes_nearest_count",
     text: `
       SELECT 1 AS distance
-      FROM pcio.onspd
+      FROM public.postcodes
       WHERE date_of_termination IS NULL
         AND ST_DWithin(location, ST_MakePoint($1::float8, $2::float8)::geography, $3::float8)
       LIMIT $4
@@ -412,7 +412,7 @@ const loadRandomPostcodes = async (
     params.push(outcode.toUpperCase().replace(/\s/g, ""));
   }
   const result = await query<{ postcode: string }>(
-    `SELECT postcode FROM pcio.onspd ${where}`,
+    `SELECT postcode FROM public.postcodes ${where}`,
     params
   );
   return result.rows.map((r) => r.postcode);

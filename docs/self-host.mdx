@@ -41,7 +41,7 @@ Configuration is environment-variable-driven:
 
 ### Database container
 
-`idealpostcodes/postcodes.io.db` is built on top of the official `postgis/postgis` image and ships a pre-loaded `pg_dump` of the latest ONSPD / OS Open Names / Scottish Postcode Directory data, denormalised into the `pcio.*` schema (`pcio.onspd`, `pcio.opennames`, `pcio.spd`). The image is rebuilt and re-tagged each time the upstream dump is refreshed; see the [Changelog](https://github.com/ideal-postcodes/postcodes.io/blob/master/CHANGELOG.md) for dataset cadence.
+`idealpostcodes/postcodes.io.db` is built on top of the official `postgis/postgis` image and ships a pre-loaded `pg_dump` of the latest ONSPD / OS Open Names / Scottish Postcode Directory data, denormalised into the `public` schema (`public.postcodes`, `public.places`, `public.scottish_postcodes`, `public.outcodes`). The image is rebuilt and re-tagged each time the upstream dump is refreshed; see the [Changelog](https://github.com/ideal-postcodes/postcodes.io/blob/master/CHANGELOG.md) for dataset cadence.
 
 :::info
 On first start the container enables PostGIS and restores the dump. Restoration takes 1-3 minutes depending on hardware. Subsequent starts skip the restore.
