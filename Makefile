@@ -24,6 +24,17 @@ down:
 wipe:
 	docker compose -f docker/dev/docker-compose.yml down -v
 
+## Drop, recreate and reseed postcodesiodb from the dump URL in ./latest
+.PHONY: seed
+seed:
+	docker exec dev-db-1 psql -U postcodesio -d postgres -c "DROP DATABASE IF EXISTS postcodesiodb;"
+	docker exec dev-db-1 psql -U postcodesio -d postgres -c "CREATE DATABASE postcodesiodb OWNER postcodesio;"
+	docker exec dev-db-1 psql -U postcodesio -d postcodesiodb -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+	curl -sSL "$$(cat latest)" \
+		| gunzip \
+		| grep -vE '^\\(restrict|unrestrict) ' \
+		| docker exec -i dev-db-1 psql -U postcodesio -d postcodesiodb -v ON_ERROR_STOP=1 -q
+
 ## Tail development service logs
 .PHONY: logs
 logs:
