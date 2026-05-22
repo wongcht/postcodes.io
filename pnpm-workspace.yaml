@@ -3,7 +3,7 @@ allowBuilds:
   core-js: false
   core-js-pure: false
   esbuild: true
-  postman-code-generators: true
+  postman-code-generators: false
   protobufjs: true
 
 minimumReleaseAge: 0
