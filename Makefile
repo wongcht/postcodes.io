@@ -34,6 +34,12 @@ seed:
 		| gunzip \
 		| grep -vE '^\\(restrict|unrestrict) ' \
 		| docker exec -i dev-db-1 psql -U postcodesio -d postcodesiodb -v ON_ERROR_STOP=1 -q
+	$(MAKE) prewarm
+
+## VACUUM ANALYZE + pg_prewarm hot tables/indexes (no-op if pg is tuned with autovacuum=off; safe to re-run)
+.PHONY: prewarm
+prewarm:
+	docker exec -i dev-db-1 psql -U postcodesio -d postcodesiodb -v ON_ERROR_STOP=1 -q < docker/prewarm.sql
 
 ## Tail development service logs
 .PHONY: logs

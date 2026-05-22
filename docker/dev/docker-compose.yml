@@ -11,3 +11,9 @@ services:
       - POSTGRES_USER=postcodesio
     ports:
       - "5433:5432"
+    volumes:
+      - ../postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
