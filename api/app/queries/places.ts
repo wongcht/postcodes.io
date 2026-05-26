@@ -125,9 +125,10 @@ const prefixSearch = async (
 let codeCache: string[] | null = null;
 
 const loadCodes = async (): Promise<string[]> => {
-  const result = await query<{ code: string }>(
-    "SELECT code FROM public.places"
-  );
+  const result = await query<{ code: string }>({
+    name: "places_load_codes",
+    text: "SELECT code FROM public.places",
+  });
   return result.rows.map((r) => r.code);
 };
 

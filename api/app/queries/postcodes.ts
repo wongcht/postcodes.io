@@ -404,16 +404,23 @@ const cachedRandomPostcodes: Record<string, string[]> = {};
 const loadRandomPostcodes = async (
   outcode: string | undefined
 ): Promise<string[]> => {
-  const params: any[] = [];
-  let where = "WHERE date_of_termination IS NULL";
-  if (outcode) {
-    where += " AND outcode = $1";
-    params.push(outcode.toUpperCase().replace(/\s/g, ""));
-  }
-  const result = await query<{ postcode: string }>(
-    `SELECT postcode FROM public.postcodes ${where}`,
-    params
-  );
+  const result = outcode
+    ? await query<{ postcode: string }>({
+        name: "postcodes_random_by_outcode",
+        text: `
+          SELECT postcode FROM public.postcodes
+          WHERE date_of_termination IS NULL
+            AND outcode = $1
+        `,
+        values: [outcode.toUpperCase().replace(/\s/g, "")],
+      })
+    : await query<{ postcode: string }>({
+        name: "postcodes_random_all",
+        text: `
+          SELECT postcode FROM public.postcodes
+          WHERE date_of_termination IS NULL
+        `,
+      });
   return result.rows.map((r) => r.postcode);
 };
 
