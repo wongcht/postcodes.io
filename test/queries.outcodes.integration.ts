@@ -9,7 +9,7 @@ describe("queries/outcodes (contract)", () => {
   describe("find()", () => {
     it("returns aggregated row for a known outcode", async () => {
       expect(await find("AB10")).toEqual({
-        admin_county: null,
+        admin_county: ["(pseudo) Scotland"],
         admin_district: ["Aberdeen City"],
         admin_ward: [
           "Airyhall/Broomhill/Garthdee",
@@ -21,8 +21,8 @@ describe("queries/outcodes (contract)", () => {
         ],
         country: ["Scotland"],
         eastings: 392788,
-        latitude: 57.135368813069896,
-        longitude: -2.12078915805471,
+        latitude: 57.13536881306984,
+        longitude: -2.1207891580547087,
         northings: 804948,
         outcode: "AB10",
         parish: null,
@@ -31,7 +31,7 @@ describe("queries/outcodes (contract)", () => {
     });
     it("normalises whitespace and case", async () => {
       expect(await find("  ab 10  ")).toEqual({
-        admin_county: null,
+        admin_county: ["(pseudo) Scotland"],
         admin_district: ["Aberdeen City"],
         admin_ward: [
           "Airyhall/Broomhill/Garthdee",
@@ -43,8 +43,8 @@ describe("queries/outcodes (contract)", () => {
         ],
         country: ["Scotland"],
         eastings: 392788,
-        latitude: 57.135368813069896,
-        longitude: -2.12078915805471,
+        latitude: 57.13536881306984,
+        longitude: -2.1207891580547087,
         northings: 804948,
         outcode: "AB10",
         parish: null,
@@ -64,7 +64,7 @@ describe("queries/outcodes (contract)", () => {
     it("returns ordered outcodes near the anchor", async () => {
       expect(await nearest({ ...ANCHOR, radius: "5000", limit: "5" })).toEqual([
         {
-          admin_county: null,
+          admin_county: ["(pseudo) Scotland"],
           admin_district: ["Aberdeen City"],
           admin_ward: [
             "George St/Harbour",
@@ -74,7 +74,7 @@ describe("queries/outcodes (contract)", () => {
           country: ["Scotland"],
           distance: 1167.88531644,
           eastings: 394472,
-          latitude: 57.139323289556934,
+          latitude: 57.13932328955692,
           longitude: -2.092987414556961,
           northings: 805386,
           outcode: "AB11",
@@ -82,7 +82,7 @@ describe("queries/outcodes (contract)", () => {
           parliamentary_constituency: ["Aberdeen South"],
         },
         {
-          admin_county: null,
+          admin_county: ["(pseudo) Scotland"],
           admin_district: ["Aberdeen City"],
           admin_ward: [
             "Airyhall/Broomhill/Garthdee",
@@ -95,15 +95,15 @@ describe("queries/outcodes (contract)", () => {
           country: ["Scotland"],
           distance: 2143.76285125,
           eastings: 392788,
-          latitude: 57.135368813069896,
-          longitude: -2.12078915805471,
+          latitude: 57.13536881306984,
+          longitude: -2.1207891580547087,
           northings: 804948,
           outcode: "AB10",
           parish: null,
           parliamentary_constituency: ["Aberdeen North", "Aberdeen South"],
         },
         {
-          admin_county: null,
+          admin_county: ["(pseudo) Scotland"],
           admin_district: ["Aberdeen City"],
           admin_ward: [
             "Dyce/Bucksburn/Danestone",
@@ -113,17 +113,17 @@ describe("queries/outcodes (contract)", () => {
             "Northfield/Mastrick North",
           ],
           country: ["Scotland"],
-          distance: 3800.41921116,
+          distance: 3800.41921117,
           eastings: 390620,
-          latitude: 57.16002244140614,
-          longitude: -2.1567133033854127,
+          latitude: 57.16002244140619,
+          longitude: -2.156713303385415,
           northings: 807697,
           outcode: "AB16",
           parish: null,
           parliamentary_constituency: ["Aberdeen North"],
         },
         {
-          admin_county: null,
+          admin_county: ["(pseudo) Scotland"],
           admin_district: ["Aberdeen City", "Aberdeenshire"],
           admin_ward: [
             "Airyhall/Broomhill/Garthdee",
@@ -137,8 +137,8 @@ describe("queries/outcodes (contract)", () => {
           country: ["Scotland"],
           distance: 4587.16320558,
           eastings: 389845,
-          latitude: 57.13760743744378,
-          longitude: -2.169419444644467,
+          latitude: 57.13760743744377,
+          longitude: -2.169419444644466,
           northings: 805204,
           outcode: "AB15",
           parish: null,
@@ -169,7 +169,7 @@ describe("queries/outcodes (contract)", () => {
     it("shapes a known outcode row into the public JSON response", async () => {
       const row = await find("AB10");
       expect(row && toJson(row)).toEqual({
-        admin_county: null,
+        admin_county: ["(pseudo) Scotland"],
         admin_district: ["Aberdeen City"],
         admin_ward: [
           "Airyhall/Broomhill/Garthdee",
@@ -181,8 +181,8 @@ describe("queries/outcodes (contract)", () => {
         ],
         country: ["Scotland"],
         eastings: 392788,
-        latitude: 57.135368813069896,
-        longitude: -2.12078915805471,
+        latitude: 57.13536881306984,
+        longitude: -2.1207891580547087,
         northings: 804948,
         outcode: "AB10",
         parish: null,
