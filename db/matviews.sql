@@ -43,3 +43,29 @@ GROUP BY outcode;
 
 CREATE UNIQUE INDEX IF NOT EXISTS outcodes_outcode_idx ON public.outcodes (outcode);
 CREATE INDEX IF NOT EXISTS outcodes_location_idx ON public.outcodes USING gist (location);
+
+-- Partial indexes over active postcodes only. Every nearest / find / search
+-- query filters `date_of_termination IS NULL`, so a partial index avoids
+-- entries for terminated postcodes and lets the planner skip the predicate
+-- recheck. Smaller index, better cache locality.
+CREATE INDEX IF NOT EXISTS postcodes_active_location_gix
+  ON public.postcodes USING gist (location)
+  WHERE date_of_termination IS NULL;
+
+CREATE INDEX IF NOT EXISTS postcodes_active_replace_idx
+  ON public.postcodes USING btree (replace((postcode)::text, ' '::text, ''::text))
+  WHERE date_of_termination IS NULL;
+
+CREATE INDEX IF NOT EXISTS postcodes_active_postcode_idx
+  ON public.postcodes USING btree (postcode)
+  WHERE date_of_termination IS NULL;
+
+CREATE INDEX IF NOT EXISTS postcodes_active_outcode_idx
+  ON public.postcodes USING btree (outcode)
+  WHERE date_of_termination IS NULL;
+
+-- Inverse partial for GET /terminated_postcodes/:postcode. Niche endpoint but
+-- the index is small (terminated rows are a minority).
+CREATE INDEX IF NOT EXISTS postcodes_terminated_replace_idx
+  ON public.postcodes USING btree (replace((postcode)::text, ' '::text, ''::text))
+  WHERE date_of_termination IS NOT NULL;
