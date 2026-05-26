@@ -3,7 +3,11 @@ import { getConfig } from "../../config/config";
 
 const { postgres } = getConfig();
 
-export const pool = new Pool(postgres);
+const max = process.env.POSTGRES_POOL_MAX
+  ? parseInt(process.env.POSTGRES_POOL_MAX, 10)
+  : 10;
+
+export const pool = new Pool({ ...postgres, max });
 
 export const query = <T = any>(
   text: string | QueryConfig,

@@ -281,15 +281,15 @@ export const nearestPostcodes = async (
   }
 
   const result = await query<PostcodeRow>({
-    name: "postcodes_nearest",
+    name: "postcodes_nearest_knn",
     text: `
       SELECT
         ${SELECT_COLUMNS},
-        ST_Distance(location, ST_MakePoint($1::float8, $2::float8)::geography) AS distance
+        (location OPERATOR(public.<->) ST_MakePoint($1::float8, $2::float8)::geography) AS distance
       FROM public.postcodes
       WHERE date_of_termination IS NULL
-        AND ST_DWithin(location, ST_MakePoint($1::float8, $2::float8)::geography, $3::float8)
-      ORDER BY distance ASC, postcode ASC
+        AND ST_DWithin(location, ST_MakePoint($1::float8, $2::float8)::geography, $3::float8, false)
+      ORDER BY location OPERATOR(public.<->) ST_MakePoint($1::float8, $2::float8)::geography
       LIMIT $4::int
     `,
     values: [longitude, latitude, radius, limit],
@@ -323,32 +323,31 @@ export const nearestPostcodesMany = async (
   });
 
   const result = await query<PostcodeRow & { idx: number }>({
-    name: "postcodes_nearest_many",
+    name: "postcodes_nearest_many_knn",
     text: `
       WITH inputs AS (
-        SELECT *
+        SELECT
+          idx,
+          ST_MakePoint(lng, lat)::geography AS pt,
+          radius,
+          lim
         FROM UNNEST(
           $1::int[], $2::float8[], $3::float8[], $4::float8[], $5::int[]
         ) AS t(idx, lng, lat, radius, lim)
       )
-      SELECT i.idx, ${SELECT_COLUMNS},
-        ST_Distance(o.location, ST_MakePoint(i.lng, i.lat)::geography) AS distance
+      SELECT i.idx, o.*
       FROM inputs i
       JOIN LATERAL (
-        SELECT *
+        SELECT
+          ${SELECT_COLUMNS},
+          (location OPERATOR(public.<->) i.pt) AS distance
         FROM public.postcodes
         WHERE date_of_termination IS NULL
-          AND ST_DWithin(
-            location,
-            ST_MakePoint(i.lng, i.lat)::geography,
-            i.radius
-          )
-        ORDER BY ST_Distance(
-          location, ST_MakePoint(i.lng, i.lat)::geography
-        ) ASC, postcode ASC
+          AND ST_DWithin(location, i.pt, i.radius, false)
+        ORDER BY location OPERATOR(public.<->) i.pt
         LIMIT i.lim
       ) o ON true
-      ORDER BY i.idx, distance ASC, o.postcode ASC
+      ORDER BY i.idx, distance ASC
     `,
     values: [idx, lng, lat, radii, limits],
   });
