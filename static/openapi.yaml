@@ -775,14 +775,14 @@ components:
           type: string
           nullable: true
           description: The Senedd Cymru (Welsh Parliament) constituency for this postcode. Only applicable to Welsh postcodes; null elsewhere.
-          example: null
+          example: Caerdydd Penarth
         senedd_constituency_no:
           title: Senedd Cymru Constituency Number
           type: integer
           format: int32
           nullable: true
           description: The Senedd Cymru (Welsh Parliament) constituency number for this postcode. Only applicable to Welsh postcodes; null elsewhere.
-          example: null
+          example: 14
         nhs_region:
           title: NHS England Region
           type: string
@@ -1946,7 +1946,8 @@ components:
           items:
             type: string
           description: Administrative counties within this outcode.
-          example: []
+          example:
+            - (pseudo) England (UA/MD/LB)
         admin_district:
           title: District
           type: array
