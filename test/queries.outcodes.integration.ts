@@ -9,7 +9,7 @@ describe("queries/outcodes (contract)", () => {
   describe("find()", () => {
     it("returns aggregated row for a known outcode", async () => {
       expect(await find("AB10")).toEqual({
-        admin_county: ["(pseudo) Scotland"],
+        admin_county: [],
         admin_district: ["Aberdeen City"],
         admin_ward: [
           "Airyhall/Broomhill/Garthdee",
@@ -25,13 +25,13 @@ describe("queries/outcodes (contract)", () => {
         longitude: -2.1207891580547087,
         northings: 804948,
         outcode: "AB10",
-        parish: null,
+        parish: [],
         parliamentary_constituency: ["Aberdeen North", "Aberdeen South"],
       });
     });
     it("normalises whitespace and case", async () => {
       expect(await find("  ab 10  ")).toEqual({
-        admin_county: ["(pseudo) Scotland"],
+        admin_county: [],
         admin_district: ["Aberdeen City"],
         admin_ward: [
           "Airyhall/Broomhill/Garthdee",
@@ -47,7 +47,7 @@ describe("queries/outcodes (contract)", () => {
         longitude: -2.1207891580547087,
         northings: 804948,
         outcode: "AB10",
-        parish: null,
+        parish: [],
         parliamentary_constituency: ["Aberdeen North", "Aberdeen South"],
       });
     });
@@ -64,7 +64,7 @@ describe("queries/outcodes (contract)", () => {
     it("returns ordered outcodes near the anchor", async () => {
       expect(await nearest({ ...ANCHOR, radius: "5000", limit: "5" })).toEqual([
         {
-          admin_county: ["(pseudo) Scotland"],
+          admin_county: [],
           admin_district: ["Aberdeen City"],
           admin_ward: [
             "George St/Harbour",
@@ -78,11 +78,11 @@ describe("queries/outcodes (contract)", () => {
           longitude: -2.092987414556961,
           northings: 805386,
           outcode: "AB11",
-          parish: null,
+          parish: [],
           parliamentary_constituency: ["Aberdeen South"],
         },
         {
-          admin_county: ["(pseudo) Scotland"],
+          admin_county: [],
           admin_district: ["Aberdeen City"],
           admin_ward: [
             "Airyhall/Broomhill/Garthdee",
@@ -99,11 +99,11 @@ describe("queries/outcodes (contract)", () => {
           longitude: -2.1207891580547087,
           northings: 804948,
           outcode: "AB10",
-          parish: null,
+          parish: [],
           parliamentary_constituency: ["Aberdeen North", "Aberdeen South"],
         },
         {
-          admin_county: ["(pseudo) Scotland"],
+          admin_county: [],
           admin_district: ["Aberdeen City"],
           admin_ward: [
             "Dyce/Bucksburn/Danestone",
@@ -119,11 +119,11 @@ describe("queries/outcodes (contract)", () => {
           longitude: -2.156713303385415,
           northings: 807697,
           outcode: "AB16",
-          parish: null,
+          parish: [],
           parliamentary_constituency: ["Aberdeen North"],
         },
         {
-          admin_county: ["(pseudo) Scotland"],
+          admin_county: [],
           admin_district: ["Aberdeen City", "Aberdeenshire"],
           admin_ward: [
             "Airyhall/Broomhill/Garthdee",
@@ -141,7 +141,7 @@ describe("queries/outcodes (contract)", () => {
           longitude: -2.169419444644466,
           northings: 805204,
           outcode: "AB15",
-          parish: null,
+          parish: [],
           parliamentary_constituency: [
             "Aberdeen North",
             "Aberdeen South",
@@ -169,7 +169,7 @@ describe("queries/outcodes (contract)", () => {
     it("shapes a known outcode row into the public JSON response", async () => {
       const row = await find("AB10");
       expect(row && toJson(row)).toEqual({
-        admin_county: ["(pseudo) Scotland"],
+        admin_county: [],
         admin_district: ["Aberdeen City"],
         admin_ward: [
           "Airyhall/Broomhill/Garthdee",
@@ -185,7 +185,7 @@ describe("queries/outcodes (contract)", () => {
         longitude: -2.1207891580547087,
         northings: 804948,
         outcode: "AB10",
-        parish: null,
+        parish: [],
         parliamentary_constituency: ["Aberdeen North", "Aberdeen South"],
       });
     });
