@@ -22,7 +22,7 @@ describe("queries/postcodes (contract)", () => {
   describe("find()", () => {
     it("returns the row for a known live postcode", async () => {
       expect(await find(KNOWN_LIVE)).toEqual({
-        admin_county: "(pseudo) Scotland",
+        admin_county: null,
         admin_county_id: "S99999999",
         admin_district: "Aberdeen City",
         admin_district_id: "S12000033",
@@ -101,7 +101,7 @@ describe("queries/postcodes (contract)", () => {
     });
     it("normalises case and whitespace", async () => {
       expect(await find("  ab10 1ab  ")).toEqual({
-        admin_county: "(pseudo) Scotland",
+        admin_county: null,
         admin_county_id: "S99999999",
         admin_district: "Aberdeen City",
         admin_district_id: "S12000033",
@@ -189,7 +189,7 @@ describe("queries/postcodes (contract)", () => {
     it("returns rows for multiple compact postcodes", async () => {
       expect(await findMany(["AB101AB", "AB101AF"])).toEqual([
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -263,7 +263,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -341,7 +341,7 @@ describe("queries/postcodes (contract)", () => {
     it("preserves DB row order regardless of input order", async () => {
       expect(await findMany(["AB101AF", "AB101AB"])).toEqual([
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -415,7 +415,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -502,7 +502,7 @@ describe("queries/postcodes (contract)", () => {
     it("returns exact match when fully-specified postcode given", async () => {
       expect(await search({ postcode: KNOWN_LIVE })).toEqual([
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -580,7 +580,7 @@ describe("queries/postcodes (contract)", () => {
     it("returns prefix matches for outcode-only query", async () => {
       expect(await search({ postcode: "AB10" })).toEqual([
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -654,7 +654,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -728,7 +728,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -802,7 +802,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -876,7 +876,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -950,7 +950,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1024,7 +1024,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1098,7 +1098,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1172,7 +1172,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1246,7 +1246,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1324,7 +1324,7 @@ describe("queries/postcodes (contract)", () => {
     it("honours the limit parameter", async () => {
       expect(await search({ postcode: "AB10", limit: "3" })).toEqual([
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1398,7 +1398,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1472,7 +1472,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1555,7 +1555,7 @@ describe("queries/postcodes (contract)", () => {
     it("is insensitive to case", async () => {
       expect(await search({ postcode: "ab10 1ab" })).toEqual([
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1638,7 +1638,7 @@ describe("queries/postcodes (contract)", () => {
         await nearestPostcodes({ ...ANCHOR, radius: "1000", limit: "5" })
       ).toEqual([
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1713,7 +1713,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1788,7 +1788,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1863,7 +1863,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -1938,7 +1938,7 @@ describe("queries/postcodes (contract)", () => {
           ttwa_id: "S22000047",
         },
         {
-          admin_county: "(pseudo) Scotland",
+          admin_county: null,
           admin_county_id: "S99999999",
           admin_district: "Aberdeen City",
           admin_district_id: "S12000033",
@@ -2056,7 +2056,7 @@ describe("queries/postcodes (contract)", () => {
       ).toEqual([
         [
           {
-            admin_county: "(pseudo) Scotland",
+            admin_county: null,
             admin_county_id: "S99999999",
             admin_district: "Aberdeen City",
             admin_district_id: "S12000033",
@@ -2132,7 +2132,7 @@ describe("queries/postcodes (contract)", () => {
             ttwa_id: "S22000047",
           },
           {
-            admin_county: "(pseudo) Scotland",
+            admin_county: null,
             admin_county_id: "S99999999",
             admin_district: "Aberdeen City",
             admin_district_id: "S12000033",
@@ -2208,7 +2208,7 @@ describe("queries/postcodes (contract)", () => {
             ttwa_id: "S22000047",
           },
           {
-            admin_county: "(pseudo) Scotland",
+            admin_county: null,
             admin_county_id: "S99999999",
             admin_district: "Aberdeen City",
             admin_district_id: "S12000033",
@@ -2286,7 +2286,7 @@ describe("queries/postcodes (contract)", () => {
         ],
         [
           {
-            admin_county: "(pseudo) Scotland",
+            admin_county: null,
             admin_county_id: "S99999999",
             admin_district: "Aberdeen City",
             admin_district_id: "S12000033",
@@ -2362,7 +2362,7 @@ describe("queries/postcodes (contract)", () => {
             ttwa_id: "S22000047",
           },
           {
-            admin_county: "(pseudo) Scotland",
+            admin_county: null,
             admin_county_id: "S99999999",
             admin_district: "Aberdeen City",
             admin_district_id: "S12000033",
@@ -2475,7 +2475,7 @@ describe("queries/postcodes (contract)", () => {
     it("shapes a known live postcode row into the public JSON response", async () => {
       const row = await find(KNOWN_LIVE);
       expect(row && toJson(row)).toEqual({
-        admin_county: "(pseudo) Scotland",
+        admin_county: null,
         admin_district: "Aberdeen City",
         admin_ward: "George St/Harbour",
         bua: null,

@@ -106,8 +106,8 @@ properties:
     title: County
     type: string
     nullable: true
-    description: "The administrative county for this postcode. May be empty for areas without county-level administration."
-    example: ""
+    description: "The administrative county for this postcode. Null where the postcode falls outside a county-level authority (the underlying GSS code is then a pseudo such as `E99999999`, surfaced under `codes.admin_county`)."
+    example: null
   admin_district:
     title: District
     type: string

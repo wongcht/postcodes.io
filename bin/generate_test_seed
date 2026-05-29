@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Generate test/seed/v13.sql.gz from a loaded postcodesiodb.
+# Generate test/seed/seed.sql.gz from a loaded postcodesiodb.
 #
 # Reads from a fully-populated DB under the `public` schema (typically the dev
 # compose stack: POSTGRES_HOST=127.0.0.1 POSTGRES_PORT=5433
@@ -17,7 +17,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-OUT="$ROOT/test/seed/v13.sql.gz"
+OUT="$ROOT/test/seed/seed.sql.gz"
 
 HOST="${POSTGRES_HOST:-127.0.0.1}"
 PORT="${POSTGRES_PORT:-5433}"

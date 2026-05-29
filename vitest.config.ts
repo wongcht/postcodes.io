@@ -1,6 +1,6 @@
 import { defineConfig } from "vitest/config";
 
-// Tests are read-only against the seeded Postgres DB (test/seed/v13.sql.gz),
+// Tests are read-only against the seeded Postgres DB (test/seed/seed.sql.gz),
 // so test files run in parallel — each fork gets its own pg pool.
 
 export default defineConfig({

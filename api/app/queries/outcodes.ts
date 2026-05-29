@@ -28,10 +28,19 @@ export interface OutcodeNearbyRow extends OutcodeRow {
   distance: number;
 }
 
+// Normalise NULL array_agg results (no source rows passed the matview
+// FILTER) into empty arrays so the public contract stays `string[]`.
+const COALESCE_ARRAY = (col: string) =>
+  `COALESCE(${col}, ARRAY[]::text[]) AS ${col}`;
+
 const SELECT_COLUMNS = `
   outcode, longitude, latitude, eastings, northings,
-  admin_district, parish, admin_county, admin_ward,
-  country, parliamentary_constituency
+  ${COALESCE_ARRAY("admin_district")},
+  ${COALESCE_ARRAY("parish")},
+  ${COALESCE_ARRAY("admin_county")},
+  ${COALESCE_ARRAY("admin_ward")},
+  ${COALESCE_ARRAY("country")},
+  ${COALESCE_ARRAY("parliamentary_constituency")}
 `;
 
 const normaliseOutcode = (outcode: string): string =>
