@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Drop and recreate the test database, then load test/seed/v13.sql.gz into it.
+# Drop and recreate the test database, then load test/seed/seed.sql.gz into it.
 #
 # Uses psql with standard POSTGRES_* env vars (same set as the app). Run from
 # anywhere psql can reach the target host: host shell against dev compose pg
@@ -10,7 +10,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SEED="$ROOT/test/seed/v13.sql.gz"
+SEED="$ROOT/test/seed/seed.sql.gz"
 
 HOST="${POSTGRES_HOST:-127.0.0.1}"
 PORT="${POSTGRES_PORT:-5432}"

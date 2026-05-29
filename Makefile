@@ -68,7 +68,7 @@ test-up:
 test-down:
 	docker compose -f docker/test/docker-compose.yml down
 
-## Drop and reseed the test database from test/seed/v13.sql.gz
+## Drop and reseed the test database from test/seed/seed.sql.gz
 .PHONY: test-seed
 test-seed:
 	docker compose -f docker/test/docker-compose.yml exec api pnpm run test:create
