@@ -1,3 +1,10 @@
+## [19.0.2](https://github.com/ideal-postcodes/postcodes.io/compare/19.0.1...19.0.2) (2026-05-29)
+
+
+### Bug Fixes
+
+* upstream dump now nulls county names for pseudo-county areas ([6c6bb34](https://github.com/ideal-postcodes/postcodes.io/commit/6c6bb34ed540d97633153185792896dc10847bfc))
+
 ## [19.0.1](https://github.com/ideal-postcodes/postcodes.io/compare/19.0.0...19.0.1) (2026-05-28)
 
 
