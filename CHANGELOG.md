@@ -1,3 +1,10 @@
+## [19.0.1](https://github.com/ideal-postcodes/postcodes.io/compare/19.0.0...19.0.1) (2026-05-28)
+
+
+### Bug Fixes
+
+* **deps:** add docusaurus theme dependencies and pin webpackbar ([82347d7](https://github.com/ideal-postcodes/postcodes.io/commit/82347d7ce6ef8408ab651a5a3bba0d91576580e3))
+
 # [19.0.0](https://github.com/ideal-postcodes/postcodes.io/compare/18.0.1...19.0.0) (2026-05-26)
 
 
