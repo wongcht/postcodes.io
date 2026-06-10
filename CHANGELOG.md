@@ -1,3 +1,10 @@
+# [19.1.0](https://github.com/ideal-postcodes/postcodes.io/compare/19.0.2...19.1.0) (2026-06-10)
+
+
+### Features
+
+* **scottish:** expose 2025 Scottish Parliament constituency and region ([e4b44d1](https://github.com/ideal-postcodes/postcodes.io/commit/e4b44d155a011496e1ff3d6888e22d534199518f))
+
 ## [19.0.2](https://github.com/ideal-postcodes/postcodes.io/compare/19.0.1...19.0.2) (2026-05-29)
 
 
