@@ -86,8 +86,8 @@ importers:
         specifier: ~3.9.2
         version: 3.9.2(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.15))(html-minifier-terser@7.2.0)(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@ideal-postcodes/openapi':
-        specifier: ~4.14.1
-        version: 4.14.1
+        specifier: ~4.18.1
+        version: 4.18.1
       '@mdx-js/react':
         specifier: ~3.1.1
         version: 3.1.1(@types/react@19.1.17)(react@19.2.6)
@@ -1436,8 +1436,8 @@ packages:
     resolution: {integrity: sha512-RE815I4arJFtt+FVeU1Tgp9/Xvecacji8w/V6XtXsWWH/wz/eNkNbhb+ny/+PlVZjV0rxQpRSQKNKE3lcktHEA==}
     engines: {node: '>=10.10.0'}
 
-  '@ideal-postcodes/openapi@4.14.1':
-    resolution: {integrity: sha512-kwQkX81MNbHi18JF8ze+shjsoG2iEET9RvpqVFmAN2Rinc1QCzxz9W9iUTIWCBly0AsNJNT4wlU6KS72okrV7g==}
+  '@ideal-postcodes/openapi@4.18.1':
+    resolution: {integrity: sha512-4e3xwhjWlSftRh2h09kTTBwpiz4mXwSi5PA1iqhzTRZi45IRz5VEZQjntytqxL0oi6SBUnCzYXO1yiYLSaCyYA==}
 
   '@jest/schemas@29.6.3':
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
@@ -10520,7 +10520,7 @@ snapshots:
 
   '@humanwhocodes/momoa@2.0.4': {}
 
-  '@ideal-postcodes/openapi@4.14.1': {}
+  '@ideal-postcodes/openapi@4.18.1': {}
 
   '@jest/schemas@29.6.3':
     dependencies:
